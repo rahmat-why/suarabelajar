@@ -1,0 +1,203 @@
+﻿@{
+    ViewData["Title"] = "Edit Audiobook";
+    var audiobookId = Context.GetRouteValue("id")?.ToString() ?? Context.Request.Query["id"].ToString();
+    Layout = "_LayoutAdmin";
+
+}
+<div class="p-6 max-w-lg mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Edit Audiobook</h2>
+            <a href="/admin/audiobook/index"
+               class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-400 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </a>
+        </div>
+
+        <form id="audiobookForm">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Audiobook ID</label>
+                <input type="text" id="audiobookIdDisplay" disabled
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed" />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Series</label>
+                <select id="seriesId"
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                    <option value="">-- Select Series --</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
+                <input type="text" id="title"
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                <textarea id="description" rows="3"
+                          class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Duration</label>
+                <input type="text" id="duration"
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                       placeholder="e.g. 12:34" />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Cover Image</label>
+                <input type="file" id="coverFile" accept="image/*"
+                       class="w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-700" />
+                <img id="coverPreview" src="" class="mt-3 w-20 h-28 object-cover rounded border border-gray-300 dark:border-gray-700 hidden">
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Audio File (MP3)</label>
+                <input type="file" id="audioFile" accept="audio/mpeg"
+                       class="w-full text-sm text-gray-700 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-700" />
+                <p class="text-xs text-gray-400 mt-1">Kosongkan kalau tidak ingin ganti file audio.</p>
+            </div>
+
+            <div class="flex gap-3">
+                <a href="/admin/audiobook/index"
+                   class="w-full text-center py-2 rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium transition">
+                    Cancel
+                </a>
+                <button type="submit"
+                        class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const audiobookId = "@audiobookId";
+
+    $(document).ready(function () {
+        if (!audiobookId) {
+            alert("Audiobook ID not found.");
+            window.location.href = "/admin/audiobook/index";
+            return;
+        }
+
+        // Populate series dropdown first, then load audiobook data
+        $.ajax({
+            url: '/admin/audiobook/list-active',
+            type: 'GET',
+            success: function (res) {
+                if (res.code === 200 && Array.isArray(res.data)) {
+                    res.data.forEach(s => {
+                        $("#seriesId").append(
+                            `<option value="${s.series_id}">${s.name}</option>`
+                        );
+                    });
+                }
+                loadAudiobookData();
+            },
+            error: function () {
+                alert("Failed to load series list.");
+                loadAudiobookData();
+            }
+        });
+
+        function loadAudiobookData() {
+            $.ajax({
+                url: '/admin/audiobook/get/' + encodeURIComponent(audiobookId),
+                type: 'GET',
+                success: function (res) {
+                    if (res.code === 200 && res.data) {
+                        $("#audiobookIdDisplay").val(res.data.audiobook_id);
+                        $("#seriesId").val(res.data.series_id);
+                        $("#title").val(res.data.title);
+                        $("#description").val(res.data.description);
+                        $("#duration").val(res.data.duration);
+
+                        if (res.data.cover_image) {
+                            $("#coverPreview").attr("src", "/Audiobook/image/" + res.data.cover_image).removeClass("hidden");
+                        }
+                    } else {
+                        alert(res.message || "Audiobook not found.");
+                        window.location.href = "/admin/audiobook/index";
+                    }
+                },
+                error: function () {
+                    alert("Failed to load audiobook data.");
+                    window.location.href = "/admin/audiobook/index";
+                }
+            });
+        }
+
+        // Cover preview (overrides existing preview if a new file is chosen)
+        $("#coverFile").on("change", function (e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (ev) {
+                    $("#coverPreview").attr("src", ev.target.result).removeClass("hidden");
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        $("#audiobookForm").on("submit", function (e) {
+            e.preventDefault();
+
+            const seriesId = $("#seriesId").val();
+            const title = $("#title").val().trim();
+
+            if (!seriesId || !title) {
+                alert("Series and Title are required.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("IsEdit", "true");
+            formData.append("AudiobookId", audiobookId);
+            formData.append("SeriesId", seriesId);
+            formData.append("Title", title);
+            formData.append("Description", $("#description").val().trim());
+            formData.append("Duration", $("#duration").val().trim());
+
+            const coverInput = $("#coverFile")[0];
+            if (coverInput.files.length > 0) {
+                formData.append("CoverFile", coverInput.files[0]);
+            }
+
+            const audioInput = $("#audioFile")[0];
+            if (audioInput.files.length > 0) {
+                formData.append("AudioFile", audioInput.files[0]);
+            }
+
+            $("button[type=submit]").prop("disabled", true).text("Saving...");
+
+            $.ajax({
+                url: '/admin/audiobook/save',
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    if (res.code === 200) {
+                        window.location.href = "/admin/audiobook/index";
+                    } else {
+                        alert(res.message || "Failed to save audiobook.");
+                        $("button[type=submit]").prop("disabled", false).text("Save");
+                    }
+                },
+                error: function () {
+                    alert("Server error. Please try again.");
+                    $("button[type=submit]").prop("disabled", false).text("Save");
+                }
+            });
+        });
+    });
+</script>

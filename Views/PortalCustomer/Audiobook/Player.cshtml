@@ -1,0 +1,198 @@
+﻿@{
+    ViewData["Title"] = "Audiobook Player";
+    var audiobookId = Context.Request.Query["audiobook_id"];
+    Layout = "_LayoutCustomer";
+
+    var pkg = ViewBag.Package;
+    bool isSeries = pkg != null && (bool)pkg.is_series;
+    string pkgName = pkg != null ? (string)pkg.name : "";
+}
+
+<!-- ===================== TAB ===================== -->
+<div class="border-b border-gray-700 mb-6">
+    <div class="flex gap-8">
+        <a href="/customer/player?audiobook_id=@audiobookId"
+           class="pb-3 border-b-2 border-white text-white font-semibold">
+            Listen
+        </a>
+
+        <a href="/customer/reading?audiobook_id=@audiobookId"
+           class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white hover:border-gray-500 transition">
+            Read
+        </a>
+
+        <a href="/customer/assessment?audiobook_id=@audiobookId"
+           class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white hover:border-gray-500 transition">
+            Assessment
+        </a>
+    </div>
+</div>
+
+<!-- ===================== DETAIL ===================== -->
+<div id="detail"
+     class="bg-[#151517] rounded-2xl shadow-xl p-6 mb-6 text-white">
+</div>
+
+<!-- ===================== AUDIO PLAYER ===================== -->
+<div id="audio-section" class="bg-[#151517] rounded-2xl shadow-xl p-6 hidden">
+    <audio id="audioPlayer" playsinline preload="metadata" class="hidden"></audio>
+
+    <div class="flex items-center gap-4">
+        <button id="playBtn" class="relative w-12 h-12 rounded-full bg-[#4f1636] hover:bg-[#5d1b40] flex items-center justify-center transition">
+            <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 fill-white"><path d="M8 5v14l11-7z" /></svg>
+
+            <svg id="pauseIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-6 h-6 fill-white hidden"><path d="M6 5h4v14H6zm8 0h4v14h-4z" /></svg>
+
+            <div id="loader" class="absolute inset-0 flex items-center justify-center hidden">
+                <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+            </div>
+        </button>
+
+        <div class="flex-1">
+            <input id="progress" type="range" min="0" value="0" step="1" class="w-full accent-[#4f1636]">
+            <div class="flex justify-between text-xs text-gray-400 mt-1">
+                <span id="current">0:00</span>
+                <span id="duration">0:00</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== BACK BUTTON ===================== -->
+<a href="/Audiobook/Explorer"
+   class="mt-6 inline-flex items-center
+          bg-[#4f1636] hover:bg-[#5d1b40]
+          text-white font-semibold py-2 px-4 rounded-lg transition">
+    ← Explorer
+</a>
+
+<!-- ===================== SCRIPT ===================== -->
+<script>
+    $(document).ready(loadDetail);
+
+    const IS_SERIES = @(isSeries ? "true" : "false");
+    const PACKAGE_NAME = "@Html.Raw(System.Text.Json.JsonEncodedText.Encode(pkgName ?? ""))";
+
+    function loadDetail() {
+        $.ajax({
+            url: "/customer/player",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+                skip: 0,
+                take: 0,
+                data: AUDIO_ID
+            }),
+            success: res => {
+                if (res.code === 200) {
+                    renderDetail(res.data);
+                } else {
+                    $("#detail").html(
+                        `<p class="text-red-400 text-center">${res.message}</p>`
+                    );
+                }
+            },
+            error: () => {
+                $("#detail").html(
+                    `<p class="text-red-400 text-center">Failed to load audiobook</p>`
+                );
+            }
+        });
+    }
+
+        function renderDetail(item) {
+            $("#detail").html(`
+                    <div class="flex flex-col sm:flex-row gap-6">
+                        ${!IS_SERIES ? `<img src="/Audiobook/image/${PACKAGE_NAME}/${item.cover_image}" class="w-40 h-40 rounded-2xl object-cover mx-auto sm:mx-0">` : ""}
+
+                        <div class="flex flex-col justify-center text-center sm:text-left">
+                            <h3 class="text-2xl font-bold mb-2">${item.title}</h3>
+                            <p class="text-gray-300">
+                                ${item.description ?? "No description available."}
+                            </p>
+                        </div>
+                    </div>
+                `);
+            $("#audio-section").removeClass("hidden");
+        }
+
+    /* ===================== AUDIO LOGIC ===================== */
+    const AUDIO_ID = "@audiobookId";
+    const audio = document.getElementById("audioPlayer");
+    const playBtn = document.getElementById("playBtn");
+    const loader = document.getElementById("loader");
+    const playIcon = document.getElementById("playIcon");
+    const pauseIcon = document.getElementById("pauseIcon");
+    const progress = document.getElementById("progress");
+    const current = document.getElementById("current");
+    const duration = document.getElementById("duration");
+
+    playBtn.onclick = () => {
+        if (!audio.src || audio.src === "" || audio.src.includes(window.location.pathname)) {
+            showLoader(true);
+            audio.src = "/customer/playaudio/" + AUDIO_ID;
+            audio.load();
+        }
+
+        if (audio.paused) {
+            const playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => showLoader(false));
+            }
+        } else {
+            audio.pause();
+        }
+    };
+
+    /* Buffering Logic */
+    audio.onwaiting = () => showLoader(true);
+    audio.oncanplay = () => showLoader(false);
+    audio.onplaying = () => showLoader(false);
+
+    function showLoader(isLoading) {
+        if (isLoading) {
+            loader.classList.remove("hidden");
+            playIcon.classList.add("opacity-0");
+            pauseIcon.classList.add("opacity-0");
+        } else {
+            loader.classList.add("hidden");
+            playIcon.classList.remove("opacity-0");
+            pauseIcon.classList.remove("opacity-0");
+        }
+    }
+
+    /* UI & Progress Logic */
+    audio.onplay = () => {
+        playIcon.classList.add("hidden");
+        pauseIcon.classList.remove("hidden");
+    };
+
+    audio.onpause = () => {
+        pauseIcon.classList.add("hidden");
+        playIcon.classList.remove("hidden");
+    };
+
+    audio.onloadedmetadata = () => {
+        progress.max = Math.floor(audio.duration);
+        duration.textContent = formatTime(audio.duration);
+    };
+
+    audio.ontimeupdate = () => {
+        if (!isNaN(audio.duration)) {
+            progress.value = Math.floor(audio.currentTime);
+            current.textContent = formatTime(audio.currentTime);
+        }
+    };
+
+    progress.onchange = () => { audio.currentTime = progress.value; };
+
+    function formatTime(sec) {
+        if (isNaN(sec)) return "0:00";
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60).toString().padStart(2, "0");
+        return `${m}:${s}`;
+    }
+</script>

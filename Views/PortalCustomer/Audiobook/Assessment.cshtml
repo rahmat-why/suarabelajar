@@ -1,0 +1,246 @@
+﻿@{
+    ViewData["Title"] = "Assessment";
+    Layout = "_LayoutCustomer";
+
+    var audiobookId = Context.Request.Query["audiobook_id"];
+}
+
+<!-- ===================== TAB ===================== -->
+<div class="border-b border-gray-700 mb-6">
+    <div class="flex gap-8">
+        <a href="/Audiobook/Player?audiobook_id=@audiobookId"
+            class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white hover:border-gray-500 transition">
+            Listen
+        </a>
+
+        <a href="/customer/reading?audiobook_id=@audiobookId"
+           class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white hover:border-gray-500 transition">
+            Read
+        </a>
+
+        <a href="/customer/assessment?audiobook_id=@audiobookId"
+           class="pb-3 border-b-2 border-white text-white font-semibold">
+            Assessment
+        </a>
+    </div>
+</div>
+
+<!-- ===================== HEADER ===================== -->
+<div id="assessment-header"
+     class="bg-[#151517] rounded-2xl shadow-xl p-6 mb-6 text-white">
+
+    <h2 class="text-2xl font-bold mb-2">
+        Assessment Quiz
+    </h2>
+
+    <p class="text-gray-400">
+        Kerjakan quiz berikut untuk menguji pemahamanmu terhadap audiobook yang telah didengarkan.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+
+        <div class="bg-[#1d1d20] rounded-xl p-4">
+            <p class="text-gray-400 text-sm">
+                Total Question
+            </p>
+
+            <h3 id="totalQuestion"
+                class="text-2xl font-bold mt-2">
+                -
+            </h3>
+        </div>
+
+        <div class="bg-[#1d1d20] rounded-xl p-4">
+            <p class="text-gray-400 text-sm">
+                Total Point
+            </p>
+
+            <h3 id="totalPoint"
+                class="text-2xl font-bold mt-2">
+                -
+            </h3>
+        </div>
+
+        <div class="bg-[#1d1d20] rounded-xl p-4">
+            <p class="text-gray-400 text-sm">
+                Minimum Point
+            </p>
+
+            <h3 id="minimumPoint"
+                class="text-2xl font-bold mt-2">
+                -
+            </h3>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===================== QUESTION ===================== -->
+<div id="questionContainer"
+     class="space-y-6">
+
+    <!-- Dynamic Question Here -->
+
+</div>
+
+<!-- ===================== ACTION ===================== -->
+<div class="mt-8 flex justify-between">
+
+    <a href="/Audiobook/Player?audiobook_id=@audiobookId"
+       class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition">
+        ← Back to Play Audiobook
+    </a>
+
+    <button id="btnSubmit"
+            class="bg-[#4f1636] hover:bg-[#5d1b40]
+                   text-white font-semibold
+                   py-2 px-8 rounded-lg transition">
+
+        Submit Assessment
+
+    </button>
+
+</div>
+
+<script>
+    const AUDIOBOOK_ID = "@audiobookId";
+    let ASSESSMENT_ID = null;
+    let ALREADY_SUBMITTED = false;
+
+    $(document).ready(function () {
+        loadAssessment();
+    });
+
+        function loadAssessment() {
+            $.ajax({
+                url: '/customer/assessment/get',
+                type: 'GET',
+                data: { audiobookId: AUDIOBOOK_ID },
+                success: function (res) {
+                    if (res.code !== 200) {
+                        $("#questionContainer").html(`<p class="text-red-400">${res.message}</p>`);
+                        $("#btnSubmit").prop("disabled", true).addClass("opacity-50 cursor-not-allowed");
+                        return;
+                    }
+
+                    const data = res.data;
+                    ASSESSMENT_ID = data.assessment_id;
+
+                    // Kunci cuma kalau UDAH LULUS. Belum lulus tetap bisa isi ulang.
+                    const isLocked = data.already_submitted && data.is_pass === true;
+                    ALREADY_SUBMITTED = isLocked;
+
+                    $("#totalQuestion").text(data.total_question);
+                    $("#totalPoint").text(data.total_point);
+                    $("#minimumPoint").text(data.minimum_point);
+
+                    renderQuestions(data.questions);
+
+                    if (data.already_submitted) {
+                        showResult(data.score, data.minimum_point, data.is_pass, isLocked);
+                    }
+                },
+                error: function () {
+                    $("#questionContainer").html(`<p class="text-red-400">Gagal memuat assessment.</p>`);
+                }
+            });
+        }
+
+    function renderQuestions(questions) {
+        const $container = $("#questionContainer");
+        $container.empty();
+
+        questions.forEach((q, idx) => {
+            const inputType = q.question_type === "multiple_choice" ? "checkbox" : "radio";
+            const inputName = `question_${q.assessment_question_id}`;
+
+            let optionsHtml = "";
+            q.options.forEach(opt => {
+                const checked = opt.is_selected ? "checked" : "";
+                optionsHtml += `
+                    <label class="flex items-center gap-3 bg-[#1d1d20] hover:bg-[#232326] rounded-lg p-3 cursor-pointer transition">
+                        <input type="${inputType}" name="${inputName}"
+                               class="answer-input accent-[#4f1636]"
+                               data-question-id="${q.assessment_question_id}"
+                               value="${opt.assessment_option_id}" ${checked}
+                               ${ALREADY_SUBMITTED ? "disabled" : ""} />
+                        <span class="text-gray-200">${opt.option_text}</span>
+                    </label>`;
+            });
+
+            $container.append(`
+                <div class="bg-[#151517] rounded-2xl shadow-xl p-6 text-white">
+                    <p class="font-semibold mb-4">${idx + 1}. ${q.question}
+                        <span class="text-gray-400 text-sm font-normal">(${q.point} poin)</span>
+                    </p>
+                    <div class="space-y-2">${optionsHtml}</div>
+                </div>`);
+        });
+    }
+
+        function showResult(score, minimumPoint, isPass, isLocked) {
+            const color = isPass ? "text-green-400" : "text-red-400";
+            const label = isPass ? "LULUS" : "BELUM LULUS";
+            $(".assessment-result-banner").remove(); // biar gak numpuk pas retry
+            $("#assessment-header").append(`
+                <div class="assessment-result-banner mt-6 p-4 rounded-xl bg-[#1d1d20] ${color} font-bold">
+                    Hasil terakhir kamu: ${score} poin — ${label}
+                    ${!isLocked ? '<span class="block text-sm font-normal text-gray-400 mt-1">Kamu masih bisa coba lagi.</span>' : ''}
+                </div>`);
+
+            if (isLocked) {
+                $("#btnSubmit").hide();
+            } else {
+                $("#btnSubmit").show().prop("disabled", false).text("Submit Ulang");
+            }
+        }
+
+    $(document).on("click", "#btnSubmit", function () {
+        if (ALREADY_SUBMITTED || !ASSESSMENT_ID) return;
+
+        const answersMap = {};
+        $(".answer-input:checked").each(function () {
+            const qId = $(this).data("question-id");
+            if (!answersMap[qId]) answersMap[qId] = [];
+            answersMap[qId].push($(this).val());
+        });
+
+        const uniqueQuestions = [...new Set(
+            $(".answer-input").map(function () { return $(this).data("question-id"); }).get()
+        )];
+
+        if (Object.keys(answersMap).length < uniqueQuestions.length) {
+            if (!confirm("Masih ada soal yang belum kamu jawab. Tetap submit?")) return;
+        }
+
+        const answers = Object.keys(answersMap).map(qId => ({
+            AssessmentQuestionId: qId,
+            SelectedOptionIds: answersMap[qId]
+        }));
+
+        $("#btnSubmit").prop("disabled", true).text("Submitting...");
+
+        $.ajax({
+            url: '/customer/assessment/submit',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ AssessmentId: ASSESSMENT_ID, Answers: answers }),
+            success: function (res) {
+                if (res.code === 200) {
+                    const isLocked = res.data.is_pass === true;
+                    ALREADY_SUBMITTED = isLocked;
+                    $(".answer-input").prop("disabled", isLocked); // input cuma dikunci kalau udah lulus
+                    showResult(res.data.total_point, res.data.minimum_point, res.data.is_pass, isLocked);
+                    $("#btnSubmit").prop("disabled", false).text("Submit Ulang");
+                } else {
+                    alert(res.message || "Gagal submit assessment.");
+                    $("#btnSubmit").prop("disabled", false).text(ASSESSMENT_ID && ALREADY_SUBMITTED === false ? "Submit Ulang" : "Submit Assessment");
+                }
+            },
+            error: function () {
+                alert("Server error. Silakan coba lagi.");
+                $("#btnSubmit").prop("disabled", false).text("Submit Assessment");
+            }
+        });
+    });
+</script>

@@ -1,0 +1,118 @@
+﻿@{
+    ViewData["Title"] = "Generate Code";
+    Layout = "_LayoutAdmin";
+}
+
+<div class="p-6 max-w-xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+    <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100 text-center">
+        Generate Serial Number
+    </h2>
+
+    <!-- Package -->
+    <div class="mb-4">
+        <label class="block text-gray-700 dark:text-gray-200 font-medium mb-1">
+            Package:
+        </label>
+        <select id="package"
+                class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
+                       dark:bg-gray-700 dark:text-white">
+            <option value="">-- Select Package --</option>
+            <option value="jagobacain">Jagobacain</option>
+            <option value="islambercerita">Islambercerita</option>
+            <option value="jagobacain V2">Jagobacain V2</option>
+        </select>
+    </div>
+
+    <!-- Number -->
+    <div class="mb-4">
+        <label class="block text-gray-700 dark:text-gray-200 font-medium mb-1">
+            Number of SN:
+        </label>
+        <input type="number" id="numberOfCodes" min="0" max="100" value="0"
+               class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
+                      dark:bg-gray-700 dark:text-white">
+    </div>
+
+    <!-- Button -->
+    <div class="text-center mb-6">
+        <button id="generateBtn"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg">
+            Generate & Save
+        </button>
+    </div>
+
+    <!-- Preview -->
+    <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">
+        Generated SN:
+    </h3>
+    <div class="max-h-64 overflow-y-auto mb-4 border rounded-lg p-2
+                bg-gray-50 dark:bg-gray-900">
+        <ul id="codesList" class="list-disc list-inside text-gray-700 dark:text-gray-200"></ul>
+    </div>
+
+    <p id="result" class="font-medium"></p>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(function () {
+
+        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+        function generateCode() {
+            let code = "";
+            for (let i = 0; i < 8; i++)
+                code += chars[Math.floor(Math.random() * chars.length)];
+            return "SB-" + code;
+        }
+
+        $("#numberOfCodes").on("input", function () {
+            let count = Math.min(Math.max(parseInt(this.value) || 0, 0), 100);
+            this.value = count;
+
+            $("#codesList").empty();
+            for (let i = 0; i < count; i++)
+                $("#codesList").append(`<li>${generateCode()}</li>`);
+        });
+
+        $("#generateBtn").click(function () {
+            const number = parseInt($("#numberOfCodes").val());
+            const packageName = $("#package").val();
+
+            if (!packageName) {
+                alert("Please select package");
+                return;
+            }
+
+            if (!number || number < 1) {
+                alert("Invalid number");
+                return;
+            }
+
+            $.ajax({
+                url: "/admin/codeactivation/generate",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    Data: number.toString(),
+                    Package: packageName
+                }),
+                success: function (res) {
+                    $("#codesList").empty();
+                    if (res.code === 200) {
+                        res.data.forEach(x => $("#codesList").append(`<li>${x}</li>`));
+                        $("#result").text(res.message).removeClass("text-red-500").addClass("text-green-500");
+
+                        // redirect ke /admin/codeactivation setelah 1 detik
+                        setTimeout(function () {
+                            window.location.href = "/admin/codeactivation";
+                        }, 1000);
+                    } else {
+                        $("#result").text(res.message).addClass("text-red-500");
+                    }
+                }
+            });
+        });
+
+    });
+</script>

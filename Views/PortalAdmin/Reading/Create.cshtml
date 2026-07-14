@@ -1,0 +1,126 @@
+﻿@{
+    ViewData["Title"] = "Add Reading Summary";
+    Layout = "_LayoutAdmin";
+}
+<div class="p-6 max-w-4xl mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Add Reading Summary</h2>
+            <a href="/admin/reading/index"
+               class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-400 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </a>
+        </div>
+
+        <form id="summaryForm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Summary ID</label>
+                    <input type="text" id="summaryId"
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                           placeholder="e.g. SUM001" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Audiobook</label>
+                    <select id="audiobookId"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        <option value="">-- Select Audiobook --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                <textarea id="description" rows="10"></textarea>
+            </div>
+
+            <div class="flex gap-3">
+                <a href="/admin/reading/index"
+                   class="w-full text-center py-2 rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium transition">
+                    Cancel
+                </a>
+                <button type="submit"
+                        class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
+                    Save Summary
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
+<script>
+    let editorInstance = null;
+
+    $(document).ready(function () {
+
+        ClassicEditor
+            .create(document.querySelector('#description'))
+            .then(editor => { editorInstance = editor; })
+            .catch(error => console.error(error));
+
+        $.ajax({
+            url: '/admin/reading/list-audiobook',
+            type: 'GET',
+            success: function (res) {
+                if (res.code === 200 && Array.isArray(res.data)) {
+                    res.data.forEach(a => {
+                        $("#audiobookId").append(`<option value="${a.audiobook_id}">${a.title}</option>`);
+                    });
+                }
+            },
+            error: function () {
+                alert("Failed to load audiobook list.");
+            }
+        });
+
+        $("#summaryForm").on("submit", function (e) {
+            e.preventDefault();
+
+            const summaryId = $("#summaryId").val().trim();
+            const audiobookId = $("#audiobookId").val();
+            const description = editorInstance ? editorInstance.getData().trim() : "";
+
+            if (!summaryId || !audiobookId) {
+                alert("Summary ID dan Audiobook wajib diisi.");
+                return;
+            }
+
+            if (!description) {
+                alert("Description tidak boleh kosong.");
+                return;
+            }
+
+            const payload = {
+                IsEdit: false,
+                SummaryId: summaryId,
+                AudiobookId: audiobookId,
+                Description: description
+            };
+
+            $("button[type=submit]").prop("disabled", true).text("Saving...");
+
+            $.ajax({
+                url: '/admin/reading/save',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function (res) {
+                    if (res.code === 200) {
+                        window.location.href = "/admin/reading/index";
+                    } else {
+                        alert(res.message || "Failed to save summary.");
+                        $("button[type=submit]").prop("disabled", false).text("Save Summary");
+                    }
+                },
+                error: function () {
+                    alert("Server error. Please try again.");
+                    $("button[type=submit]").prop("disabled", false).text("Save Summary");
+                }
+            });
+        });
+    });
+</script>

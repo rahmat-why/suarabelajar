@@ -1,0 +1,221 @@
+﻿@{
+    ViewData["Title"] = "Explorer";
+    Layout = "_LayoutCustomer";
+
+    var pkg = ViewBag.Package;
+    bool isSeries = pkg != null && (bool)pkg.is_series;
+    string pkgName = pkg != null ? (string)pkg.name : "";
+}
+
+<p class="text-2xl font-extrabold text-white leading-tight mt-2">
+    Platform Audio-Learning<br>
+    No. 1 di Indonesia
+</p>
+
+<p class="text-2xl font-extrabold text-white leading-tight mt-2">
+    Terinspirasi dari Penulis, Tokoh & Expert Terbaik di Dunia
+</p>
+
+@if (!isSeries)
+{
+    <div class="space-y-4 mt-8">
+        <div class="border-b border-gray-700">
+            <button class="pb-2 px-1 text-white border-b-2 border-white font-semibold cursor-default">
+                Audiobook
+            </button>
+        </div>
+
+        <div id="flat-list"
+             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        </div>
+    </div>
+}
+else
+{
+    <div id="series-container" class="space-y-10 mt-8"></div>
+}
+
+<div id="loading" class="text-center py-6 hidden">
+    <span class="text-gray-500 font-medium">Loading...</span>
+</div>
+
+<script>
+    let skip = 0;
+    let isLoading = false;
+    let isEnd = false;
+
+    const IS_SERIES = @(isSeries ? "true" : "false");
+    const PACKAGE_NAME = "@Html.Raw(System.Text.Json.JsonEncodedText.Encode(pkgName ?? ""))";
+
+    // Sama seperti TAKE_CONFIG lama: flat = 8, series = 2
+    const take = IS_SERIES ? 2 : 8;
+
+    $(document).ready(function () {
+        loadMore();
+    });
+
+    // SCROLL LOAD
+    $(window).on("scroll", function () {
+        if (
+            !isLoading &&
+            !isEnd &&
+            $(window).scrollTop() + $(window).height() >= $(document).height() - 150
+        ) {
+            loadMore();
+        }
+    });
+
+    function loadMore() {
+        if (isLoading || isEnd) return;
+
+        isLoading = true;
+        $("#loading").removeClass("hidden");
+
+        $.ajax({
+            url: "/customer/explorer",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ skip, take }),
+            success: function (res) {
+
+                if (res.code === 200 && Array.isArray(res.data)) {
+
+                    if (res.data.length === 0) {
+                        isEnd = true;
+                    } else {
+
+                        if (IS_SERIES) {
+                            renderSeries(res.data);
+                        } else {
+                            renderFlat(res.data);
+                        }
+
+                        skip += take;
+
+                        // AUTO LOAD IF NO SCROLL (PC / LARGE SCREEN)
+                        setTimeout(autoLoadIfNoScroll, 200);
+                    }
+                }
+
+                finishLoading();
+            },
+            error: finishLoading
+        });
+    }
+
+    function finishLoading() {
+        isLoading = false;
+        $("#loading").addClass("hidden");
+    }
+
+    // ===============================
+    // AUTO LOAD IF PAGE NOT SCROLLABLE
+    // ===============================
+    function autoLoadIfNoScroll() {
+        if (
+            !isEnd &&
+            !isLoading &&
+            $(document).height() <= $(window).height()
+        ) {
+            loadMore();
+        }
+    }
+
+    // ===============================
+    // FLAT RENDER (non-series package, mis. jagobacain)
+    // ===============================
+    function renderFlat(items) {
+        if (!Array.isArray(items)) return;
+
+        items.forEach(item => {
+            $("#flat-list").append(renderCard(item));
+        });
+    }
+
+    // ===============================
+    // SERIES RENDER (grouped, mis. islambercerita)
+    // ===============================
+    function renderSeries(seriesList) {
+        console.log(seriesList);
+        if (!Array.isArray(seriesList)) return;
+
+        seriesList.forEach(series => {
+
+            const safeId = encodeURIComponent(series.series_id);
+            const imagePath = `/Audiobook/image/${PACKAGE_NAME}/${safeId}.png`;
+
+            $("#series-container").append(`
+                <div class="space-y-4">
+
+                    <!-- SERIES HEADER -->
+                    <div class="relative rounded-xl overflow-hidden border border-gray-700 bg-gray-900">
+
+                            <img src="${imagePath}"
+                                 alt="${series.series_name}"
+                                 class="w-full h-44 sm:h-52 object-cover opacity-90"
+                                 onerror="this.src='/Audiobook/image/${PACKAGE_NAME}/default.jpg'">
+
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+
+                        <div class="absolute bottom-3 left-4 right-4">
+                            <h2 class="text-white text-lg font-semibold">
+                                ${series.series_name}
+                            </h2>
+                        </div>
+                    </div>
+
+                    <!-- SERIES ITEMS -->
+                    <div id="series-${safeId}"
+                         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    </div>
+
+                </div>
+            `);
+
+            if (Array.isArray(series.items) && series.items.length > 0) {
+                series.items.forEach(item => {
+                    $(`#series-${safeId}`).append(renderCard(item));
+                });
+            } else {
+                $(`#series-${safeId}`).append(`
+                    <div class="text-gray-500 text-sm col-span-full">
+                        Belum ada audiobook
+                    </div>
+                `);
+            }
+        });
+    }
+
+    // ===============================
+    // CARD (dipakai flat & series)
+    // Cover cuma tampil di package non-series (sama seperti behavior lama)
+    // ===============================
+        function renderCard(item) {
+            return `
+                    <div onclick="goToPlayer('${item.audiobook_id}')"
+                         class="relative bg-[#151517] rounded-xl shadow hover:shadow-lg transition cursor-pointer p-3 sm:p-4 flex gap-3 sm:gap-4">
+
+                        ${!IS_SERIES ? `<img src="/Audiobook/image/${PACKAGE_NAME}/${item.cover_image}" class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover flex-shrink-0">` : ""}
+
+                        <div class="flex flex-col justify-center pr-10">
+                            <div class="text-sm sm:text-base font-semibold text-gray-100 line-clamp-2">
+                                ${item.title}
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-3 right-3 sm:bottom-4 sm:right-4">
+                            <div class="w-9 h-9 bg-[#4f1636] hover:bg-[#5d1b40] rounded-full flex items-center justify-center shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                                     fill="white" class="w-4 h-4 ml-0.5">
+                                    <path d="M8 5v14l11-7z" />
+                                </svg>
+                            </div>
+                        </div>
+
+                    </div>`;
+        }
+
+    function goToPlayer(id) {
+        window.location.href = "/Audiobook/Player?audiobook_id=" + id;
+    }
+</script>

@@ -1,0 +1,314 @@
+﻿@{
+    ViewData["Title"] = "Add Quiz";
+    Layout = "_LayoutAdmin";
+}
+<div class="p-6 max-w-4xl mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Add Quiz</h2>
+            <a href="/admin/quiz/index"
+               class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-400 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </a>
+        </div>
+
+        <form id="quizForm">
+            <!-- ===== Quiz header ===== -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quiz ID</label>
+                    <input type="text" id="quizId"
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                           placeholder="e.g. QUIZ001" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Audiobook</label>
+                    <select id="audiobookId"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        <option value="">-- Select Audiobook --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quiz Title</label>
+                    <input type="text" id="title"
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                           placeholder="e.g. Quiz Chapter 1" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Minimum Point (lulus)</label>
+                    <input type="number" id="minimumPoint" min="0" value="0"
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
+                </div>
+            </div>
+
+            <!-- ===== Questions builder ===== -->
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Questions</h3>
+                <button type="button" id="addQuestionBtn"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow transition">
+                    + Add Question
+                </button>
+            </div>
+
+            <div id="questionsContainer" class="space-y-4 mb-6"></div>
+
+            <div class="flex gap-3">
+                <a href="/admin/quiz/index"
+                   class="w-full text-center py-2 rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium transition">
+                    Cancel
+                </a>
+                <button type="submit"
+                        class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
+                    Save Quiz
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ===== Templates (hidden) ===== -->
+<template id="questionTemplate">
+    <div class="question-block border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
+        <div class="flex justify-between items-start mb-3">
+            <span class="question-number font-semibold text-gray-700 dark:text-gray-200">Question #1</span>
+            <button type="button" class="removeQuestionBtn text-red-600 hover:text-red-800 text-sm font-medium">
+                Remove Question
+            </button>
+        </div>
+
+        <div class="mb-3">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Question Text</label>
+            <textarea rows="2" class="questionText w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                      placeholder="Type the question here..."></textarea>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-3">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Question Type</label>
+                <select class="questionType w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white">
+                    <option value="single_choice">Single Choice (1 jawaban benar)</option>
+                    <option value="multiple_choice">Multiple Choice (bisa &gt;1 jawaban benar)</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Point</label>
+                <input type="number" min="0" value="10"
+                       class="questionPoint w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
+            </div>
+        </div>
+
+        <div class="mb-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Options (centang = jawaban benar)</label>
+            <div class="optionsContainer space-y-2"></div>
+        </div>
+
+        <button type="button" class="addOptionBtn text-sm text-blue-600 hover:text-blue-800 font-medium">
+            + Add Option
+        </button>
+    </div>
+</template>
+
+<template id="optionTemplate">
+    <div class="option-row flex items-center gap-2">
+        <input type="checkbox" class="optionCorrect w-5 h-5 text-blue-600 rounded focus:ring-blue-500 shrink-0" />
+        <input type="text" placeholder="Option text..."
+               class="optionText flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
+        <button type="button" class="removeOptionBtn text-red-500 hover:text-red-700 shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+</template>
+
+<script>
+    $(document).ready(function () {
+
+        // Populate audiobook dropdown
+        $.ajax({
+            url: '/admin/quiz/list-audiobook',
+            type: 'GET',
+            success: function (res) {
+                if (res.code === 200 && Array.isArray(res.data)) {
+                    res.data.forEach(a => {
+                        $("#audiobookId").append(`<option value="${a.audiobook_id}">${a.title}</option>`);
+                    });
+                }
+            },
+            error: function () {
+                alert("Failed to load audiobook list.");
+            }
+        });
+
+        function renumberQuestions() {
+            $("#questionsContainer .question-block").each(function (i) {
+                $(this).find(".question-number").text("Question #" + (i + 1));
+            });
+        }
+
+        function addQuestion() {
+            const tpl = document.getElementById("questionTemplate");
+            const clone = document.importNode(tpl.content, true);
+            $("#questionsContainer").append(clone);
+            const $block = $("#questionsContainer .question-block").last();
+            addOption($block); // minimal 2 opsi default
+            addOption($block);
+            renumberQuestions();
+        }
+
+        function addOption($questionBlock) {
+            const tpl = document.getElementById("optionTemplate");
+            const clone = document.importNode(tpl.content, true);
+            $questionBlock.find(".optionsContainer").append(clone);
+        }
+
+        $("#addQuestionBtn").on("click", function () {
+            addQuestion();
+        });
+
+        // Delegated events (karena block dibuat dinamis)
+        $("#questionsContainer").on("click", ".removeQuestionBtn", function () {
+            if (!confirm("Hapus question ini beserta semua opsinya?")) return;
+            $(this).closest(".question-block").remove();
+            renumberQuestions();
+        });
+
+        $("#questionsContainer").on("click", ".addOptionBtn", function () {
+            const $block = $(this).closest(".question-block");
+            addOption($block);
+        });
+
+        $("#questionsContainer").on("click", ".removeOptionBtn", function () {
+            const $block = $(this).closest(".question-block");
+            const optionCount = $block.find(".option-row").length;
+            if (optionCount <= 2) {
+                alert("Minimal harus ada 2 opsi jawaban.");
+                return;
+            }
+            $(this).closest(".option-row").remove();
+        });
+
+        // Single choice: kalau centang salah satu, opsi lain otomatis uncheck
+        $("#questionsContainer").on("change", ".optionCorrect", function () {
+            const $block = $(this).closest(".question-block");
+            const type = $block.find(".questionType").val();
+            if (type === "single_choice" && $(this).is(":checked")) {
+                $block.find(".optionCorrect").not(this).prop("checked", false);
+            }
+        });
+
+        // Kalau tipe diganti ke single_choice, sisakan cuma 1 correct
+        $("#questionsContainer").on("change", ".questionType", function () {
+            const $block = $(this).closest(".question-block");
+            if ($(this).val() === "single_choice") {
+                const $checked = $block.find(".optionCorrect:checked");
+                if ($checked.length > 1) {
+                    $checked.not($checked.first()).prop("checked", false);
+                }
+            }
+        });
+
+        // Mulai dengan 1 question kosong
+        addQuestion();
+
+        function buildQuestionsPayload() {
+            const questions = [];
+            let valid = true;
+
+            $("#questionsContainer .question-block").each(function () {
+                const questionText = $(this).find(".questionText").val().trim();
+                const questionType = $(this).find(".questionType").val();
+                const point = parseInt($(this).find(".questionPoint").val()) || 0;
+
+                if (!questionText) {
+                    valid = false;
+                    return false;
+                }
+
+                const options = [];
+                $(this).find(".option-row").each(function () {
+                    const optionText = $(this).find(".optionText").val().trim();
+                    const isCorrect = $(this).find(".optionCorrect").is(":checked");
+                    if (optionText) {
+                        options.push({ OptionText: optionText, IsCorrect: isCorrect });
+                    }
+                });
+
+                if (options.length < 2 || !options.some(o => o.IsCorrect)) {
+                    valid = false;
+                    return false;
+                }
+
+                questions.push({
+                    Question: questionText,
+                    QuestionType: questionType,
+                    Point: point,
+                    Options: options
+                });
+            });
+
+            return valid ? questions : null;
+        }
+
+        $("#quizForm").on("submit", function (e) {
+            e.preventDefault();
+
+            const quizId = $("#quizId").val().trim();
+            const audiobookId = $("#audiobookId").val();
+            const title = $("#title").val().trim();
+            const minimumPoint = parseInt($("#minimumPoint").val()) || 0;
+
+            if (!quizId || !audiobookId || !title) {
+                alert("Quiz ID, Audiobook, dan Title wajib diisi.");
+                return;
+            }
+
+            if ($("#questionsContainer .question-block").length === 0) {
+                alert("Minimal harus ada 1 question.");
+                return;
+            }
+
+            const questions = buildQuestionsPayload();
+            if (!questions) {
+                alert("Pastikan setiap question terisi teksnya, punya minimal 2 opsi, dan minimal 1 jawaban benar dicentang.");
+                return;
+            }
+
+            const payload = {
+                IsEdit: false,
+                QuizId: quizId,
+                AudiobookId: audiobookId,
+                Title: title,
+                MinimumPoint: minimumPoint,
+                Questions: questions
+            };
+
+            $("button[type=submit]").prop("disabled", true).text("Saving...");
+
+            $.ajax({
+                url: '/admin/quiz/save',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(payload),
+                success: function (res) {
+                    if (res.code === 200) {
+                        window.location.href = "/admin/quiz/index";
+                    } else {
+                        alert(res.message || "Failed to save quiz.");
+                        $("button[type=submit]").prop("disabled", false).text("Save Quiz");
+                    }
+                },
+                error: function () {
+                    alert("Server error. Please try again.");
+                    $("button[type=submit]").prop("disabled", false).text("Save Quiz");
+                }
+            });
+        });
+    });
+</script>
