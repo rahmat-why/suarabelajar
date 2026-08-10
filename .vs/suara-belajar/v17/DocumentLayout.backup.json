@@ -1,0 +1,464 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portalcustomer\\audiobook\\assessmentfeedback.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portalcustomer\\audiobook\\assessmentfeedback.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portalcustomer\\audiobook\\assessmentpreview.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portalcustomer\\audiobook\\assessmentpreview.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portalcustomer\\audiobook\\reading.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portalcustomer\\audiobook\\reading.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portalcustomer\\audiobook\\assessment.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portalcustomer\\audiobook\\assessment.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\controllers\\portalcustomer\\readingcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\controllers\\portalcustomer\\readingcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portalcustomer\\audiobook\\explorerseriesv2.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portalcustomer\\audiobook\\explorerseriesv2.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portalcustomer\\audiobook\\explorerseriesv1.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portalcustomer\\audiobook\\explorerseriesv1.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\shared\\_layoutadmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\shared\\_layoutadmin.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\controllers\\portaladmin\\readingcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\controllers\\portaladmin\\readingcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portaladmin\\reading\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portaladmin\\reading\\create.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\controllers\\portalcustomer\\assessmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\controllers\\portalcustomer\\assessmentcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\controllers\\portaladmin\\quizcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\controllers\\portaladmin\\quizcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\controllers\\portalcustomer\\audiobookcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\controllers\\portalcustomer\\audiobookcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portalcustomer\\audiobook\\explorer.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portalcustomer\\audiobook\\explorer.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\shared\\_layoutcustomer.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\shared\\_layoutcustomer.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portaladmin\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portaladmin\\dashboard\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\_viewimports.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\_viewstart.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portaladmin\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portaladmin\\login.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\filters\\authorizecustomerfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\filters\\authorizecustomerfilter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\filters\\authorizeadmin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\filters\\authorizeadmin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\controllers\\portaladmin\\audiobookcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\controllers\\portaladmin\\audiobookcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portalcustomer\\audiobook\\trial\\explorer.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portalcustomer\\audiobook\\trial\\explorer.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\shared\\_layoutpublic.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\shared\\_layoutpublic.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|c:\\users\\asus\\downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\views\\portalcustomer\\audiobook\\player.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{1E677125-2A3B-4D2F-9EF8-1837D8EB7A54}|suara-belajar\\suara-belajar.csproj|solutionrelative:suara-belajar\\views\\portalcustomer\\audiobook\\player.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 200,
+          "SelectedChildIndex": 3,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{eefa5220-e298-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AssessmentFeedback.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\AssessmentFeedback.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\AssessmentFeedback.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\AssessmentFeedback.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\AssessmentFeedback.cshtml",
+              "ViewState": "AgIAAJwAAAAAAAAAAAAiwKoAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-06T14:01:21.517Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AssessmentPreview.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\AssessmentPreview.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\AssessmentPreview.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\AssessmentPreview.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\AssessmentPreview.cshtml",
+              "ViewState": "AgIAAGAAAAAAAAAAAAAiwH0AAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-06T13:52:20.175Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "_LayoutCustomer.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\Shared\\_LayoutCustomer.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\Shared\\_LayoutCustomer.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\Shared\\_LayoutCustomer.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\Shared\\_LayoutCustomer.cshtml",
+              "ViewState": "AgIAAH0AAAAAAAAAAAAiwJgAAABnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-02T14:48:17.665Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "_LayoutAdmin.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\Shared\\_LayoutAdmin.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\Shared\\_LayoutAdmin.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\Shared\\_LayoutAdmin.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\Shared\\_LayoutAdmin.cshtml",
+              "ViewState": "AgIAAEQAAAAAAAAAAAAiwEYAAAAXAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-02T14:48:00.205Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "_LayoutPublic.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\Shared\\_LayoutPublic.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\Shared\\_LayoutPublic.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\Shared\\_LayoutPublic.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\Shared\\_LayoutPublic.cshtml",
+              "ViewState": "AQIAACAAAAAAAAAAAAAAAC4AAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-02T14:47:38.136Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Reading.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\Reading.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\Reading.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\Reading.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\Reading.cshtml",
+              "ViewState": "AgIAABgAAAAAAAAAAAAiwCYAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-02T13:54:47.385Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "Player.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\Player.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\Player.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\Player.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\Player.cshtml",
+              "ViewState": "AQIAANcAAAAAAAAAAADwv+0AAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-02T13:51:57.112Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ExplorerSeriesV1.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\ExplorerSeriesV1.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\ExplorerSeriesV1.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\ExplorerSeriesV1.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\ExplorerSeriesV1.cshtml",
+              "ViewState": "AgIAACYCAAAAAAAAAAAQwDgCAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-04T16:51:59.579Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "ExplorerSeriesV2.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\ExplorerSeriesV2.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\ExplorerSeriesV2.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\ExplorerSeriesV2.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\ExplorerSeriesV2.cshtml",
+              "ViewState": "AgIAAPwAAAAAAAAAAAAiwBMBAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-02T13:50:42.841Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Assessment.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\Assessment.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\Assessment.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\Assessment.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\Assessment.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-04T18:31:24.677Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "Explorer.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\Trial\\Explorer.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\Trial\\Explorer.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\Trial\\Explorer.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\Trial\\Explorer.cshtml",
+              "ViewState": "AQIAACQAAAAAAAAAAAAAAAkAAAATAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-02T14:56:10.44Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ReadingController.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalCustomer\\ReadingController.cs",
+              "RelativeDocumentMoniker": "suara-belajar\\Controllers\\PortalCustomer\\ReadingController.cs",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalCustomer\\ReadingController.cs",
+              "RelativeToolTip": "suara-belajar\\Controllers\\PortalCustomer\\ReadingController.cs",
+              "ViewState": "AgIAAHIAAAAAAAAAAAAwwH0AAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-05T11:25:06.691Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "QuizController.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalAdmin\\QuizController.cs",
+              "RelativeDocumentMoniker": "suara-belajar\\Controllers\\PortalAdmin\\QuizController.cs",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalAdmin\\QuizController.cs",
+              "RelativeToolTip": "suara-belajar\\Controllers\\PortalAdmin\\QuizController.cs",
+              "ViewState": "AgIAABEDAAAAAAAAAAAowB0DAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-05T10:17:40.417Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Create.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalAdmin\\Reading\\Create.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalAdmin\\Reading\\Create.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalAdmin\\Reading\\Create.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalAdmin\\Reading\\Create.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-05T11:37:25.142Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ReadingController.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalAdmin\\ReadingController.cs",
+              "RelativeDocumentMoniker": "suara-belajar\\Controllers\\PortalAdmin\\ReadingController.cs",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalAdmin\\ReadingController.cs",
+              "RelativeToolTip": "suara-belajar\\Controllers\\PortalAdmin\\ReadingController.cs",
+              "ViewState": "AgIAAMsAAAAAAAAAAAAuwJMAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-05T11:38:02.609Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "AudiobookController.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalCustomer\\AudiobookController.cs",
+              "RelativeDocumentMoniker": "suara-belajar\\Controllers\\PortalCustomer\\AudiobookController.cs",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalCustomer\\AudiobookController.cs",
+              "RelativeToolTip": "suara-belajar\\Controllers\\PortalCustomer\\AudiobookController.cs",
+              "ViewState": "AgIAAKIDAAAAAAAAAAAowK8DAABAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-02T12:35:58.974Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "AssessmentController.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalCustomer\\AssessmentController.cs",
+              "RelativeDocumentMoniker": "suara-belajar\\Controllers\\PortalCustomer\\AssessmentController.cs",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalCustomer\\AssessmentController.cs",
+              "RelativeToolTip": "suara-belajar\\Controllers\\PortalCustomer\\AssessmentController.cs",
+              "ViewState": "AgIAAGUGAAAAAAAAAAAgwH0GAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-04T18:31:14.291Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Login.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalAdmin\\Login.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalAdmin\\Login.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalAdmin\\Login.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalAdmin\\Login.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAABfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-04T06:14:20.582Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Explorer.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\Explorer.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\Explorer.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalCustomer\\Audiobook\\Explorer.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalCustomer\\Audiobook\\Explorer.cshtml",
+              "ViewState": "AgIAAHECAAAAAAAAAAAcwHYCAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-02T12:36:37.393Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "_ViewImports.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\_ViewImports.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\_ViewImports.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\_ViewImports.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\_ViewImports.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-04T06:14:39.12Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "_ViewStart.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\_ViewStart.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\_ViewStart.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\_ViewStart.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\_ViewStart.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-04T06:14:42.841Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalAdmin\\Dashboard\\Index.cshtml",
+              "RelativeDocumentMoniker": "suara-belajar\\Views\\PortalAdmin\\Dashboard\\Index.cshtml",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Views\\PortalAdmin\\Dashboard\\Index.cshtml",
+              "RelativeToolTip": "suara-belajar\\Views\\PortalAdmin\\Dashboard\\Index.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-08-04T06:17:32.152Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\appsettings.json",
+              "RelativeDocumentMoniker": "suara-belajar\\appsettings.json",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\appsettings.json",
+              "RelativeToolTip": "suara-belajar\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-08-04T05:15:01.31Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "AudiobookController.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalAdmin\\AudiobookController.cs",
+              "RelativeDocumentMoniker": "suara-belajar\\Controllers\\PortalAdmin\\AudiobookController.cs",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Controllers\\PortalAdmin\\AudiobookController.cs",
+              "RelativeToolTip": "suara-belajar\\Controllers\\PortalAdmin\\AudiobookController.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-02T14:56:38.077Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "AuthorizeCustomerFilter.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Filters\\AuthorizeCustomerFilter.cs",
+              "RelativeDocumentMoniker": "suara-belajar\\Filters\\AuthorizeCustomerFilter.cs",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Filters\\AuthorizeCustomerFilter.cs",
+              "RelativeToolTip": "suara-belajar\\Filters\\AuthorizeCustomerFilter.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-02T15:08:48.633Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "AuthorizeAdmin.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Filters\\AuthorizeAdmin.cs",
+              "RelativeDocumentMoniker": "suara-belajar\\Filters\\AuthorizeAdmin.cs",
+              "ToolTip": "C:\\Users\\ASUS\\Downloads\\suarabelajarv2\\suarabelajarv2\\suara-belajar\\Filters\\AuthorizeAdmin.cs",
+              "RelativeToolTip": "suara-belajar\\Filters\\AuthorizeAdmin.cs",
+              "ViewState": "AQIAABIAAAAAAAAAAAAQwB0AAAAlAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-02T15:08:50.906Z"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 200,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+﻿@{
+    var package = Context.Request.Cookies["PACKAGE"] ?? "Trial";
+    var jagobacain = "https://www.instagram.com/jagobacain?igsh=MWw5YzY1Y2lhYzlmYg==";
+    var islambercerita = "https://www.instagram.com/islambercerita.id?igsh=MTN6NG5kbjQ2cG9vMg==";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Suara Belajar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+
+<body class="relative text-gray-200 min-h-screen flex flex-col">
+
+    <!-- Background layer (fixed to viewport, won't stretch/zoom on tall pages) -->
+    <div class="fixed inset-0 bg-cover bg-no-repeat bg-center md:bg-top -z-20"
+         style="background-image: url('/newbg.png');"></div>
+    <div class="fixed inset-0 bg-black/80 -z-10"></div> 
+
+    <!-- Header -->
+    <header class="border-b border-gray-700 bg-black">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <!-- LEFT: TITLE + PACKAGES -->
+            <div>
+                <h1 class="text-xl text-white font-semibold">
+                    suarabelajar.com
+                </h1>
+                <div class="flex items-center gap-4 mt-2 text-sm text-white/70">
+                    <span class="flex items-center gap-2">
+                        <img src="/jagobacainv2.png"
+                             alt="Jagobacain"
+                             class="w-6 h-6 object-contain">
+                        jagobacain
+                    </span>
+
+                    <span class="flex items-center gap-2">
+                        <img src="/islambercerita.png"
+                             alt="Islam Bercerita"
+                             class="w-6 h-6 object-contain">
+                        islambercerita
+                    </span>
+                </div>
+            </div>
+            <!-- RIGHT: PROFILE BUTTON -->
+            @if (package != "Trial")
+            {
+                <div class="relative flex flex-col items-center">
+                    <button id="profileBtn"
+                            aria-label="Profile"
+                            class="w-11 h-11 rounded-full bg-white flex items-center justify-center
+           shadow-lg transition transform hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             viewBox="0 0 24 24"
+                             fill="none"
+                             stroke="#4f1636"
+                             stroke-width="1.8"
+                             stroke-linecap="round"
+                             stroke-linejoin="round"
+                             class="w-7 h-7">
+                            <path d="M20 21a8 8 0 0 0-16 0" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                    </button>
+
+                    <span class="mt-1 text-[13px] font-medium text-white/80 leading-none whitespace-nowrap">
+                        Logout
+                    </span>
+
+                    <!-- Profile Popup -->
+                    <div id="profilePopup"
+                         class="hidden absolute right-0 top-full mt-2 w-72 bg-white text-black
+        rounded-xl shadow-xl p-4 z-50">
+                        <p class="text-sm leading-relaxed mb-4">
+                            <strong>Halo Member suarabelajar.com</strong> 👋<br>
+                            Saat ini kamu berlangganan
+                            <span class="font-semibold text-indigo-600">@package</span>.
+                        </p>
+                        <form method="post" action="/customer/logout">
+                            <button type="submit"
+                                    class="w-full py-2 rounded-lg bg-[#4f1636] hover:bg-[#5d1b40]
+                   text-white transition">
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-6xl mx-auto px-4 py-6 w-full">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-700 mt-auto shrink-0 bg-black">
+        <div class="max-w-6xl mx-auto px-4 py-4
+                flex flex-col md:flex-row
+                justify-between items-center
+                gap-4 text-sm text-gray-400">
+
+            <div>
+                © <span id="year"></span> suarabelajar. All rights reserved.
+            </div>
+
+            <div class="flex items-center gap-6">
+                <a href="@jagobacain" target="_blank"
+                   class="flex items-center gap-2 hover:text-white transition">
+                    <img src="/jagobacainv2.png" class="w-5 h-5" />
+                    @@jagobacain
+                </a>
+
+                <a href="@islambercerita" target="_blank"
+                   class="flex items-center gap-2 hover:text-white transition">
+                    <img src="/islambercerita.png" class="w-5 h-5" />
+                    @@islambercerita
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    @RenderSection("Scripts", required: false)
+
+    <script>
+        $(document).ready(function () {
+            const popup = $("#profilePopup");
+
+            $("#profileBtn").on("click", function (e) {
+                e.stopPropagation();
+                popup.toggleClass("hidden");
+            });
+
+            $(document).on("click", function () {
+                popup.addClass("hidden");
+            });
+
+            document.addEventListener("contextmenu", function (e) { e.preventDefault(); }, false);
+
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "F12" || e.keyCode === 123) e.preventDefault();
+                if (e.ctrlKey && e.shiftKey && (e.key === "I" || e.keyCode === 73)) e.preventDefault();
+                if (e.ctrlKey && e.shiftKey && (e.key === "J" || e.keyCode === 74)) e.preventDefault();
+                if (e.ctrlKey && (e.key === "U" || e.keyCode === 85)) e.preventDefault();
+                if (e.ctrlKey && (e.key === "S" || e.keyCode === 83)) e.preventDefault();
+                if (e.ctrlKey && e.shiftKey && (e.key === "C" || e.keyCode === 67)) e.preventDefault();
+            }, false);
+        });
+    </script>
+
+</body>
+</html>

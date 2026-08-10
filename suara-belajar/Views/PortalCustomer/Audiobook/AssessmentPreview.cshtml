@@ -1,0 +1,292 @@
+@{
+    ViewData["Title"] = "Assessment Preview";
+    Layout = "_LayoutCustomer";
+}
+
+<div id="preview-card" class="mt-6"></div>
+
+<div id="loading" class="text-center py-6">
+    <span class="text-gray-500 font-medium">Loading...</span>
+</div>
+
+<div id="error-box" class="hidden text-center py-10 text-gray-400"></div>
+
+<script>
+    // ==========================================
+    // STATE
+    // ==========================================
+    const params = new URLSearchParams(window.location.search);
+    const seriesId = params.get("series_id");
+
+
+    // ==========================================
+    // DOCUMENT READY
+    // ==========================================
+    $(document).ready(function () {
+
+        if (!seriesId) {
+            showError("Series ID tidak ditemukan.");
+            return;
+        }
+
+        loadPreview();
+
+    });
+
+
+    // ==========================================
+    // LOAD PREVIEW
+    // ==========================================
+    function loadPreview() {
+
+        $("#loading").removeClass("hidden");
+
+        $.ajax({
+
+            url: "/customer/assessment/preview",
+
+            method: "GET",
+
+            data: { seriesId: seriesId },
+
+            success: function (res) {
+
+                $("#loading").addClass("hidden");
+
+                if (res && res.code === 200 && res.data) {
+
+                    renderPreview(res.data);
+
+                } else {
+
+                    showError(res && res.message ? res.message : "Gagal memuat preview quiz.");
+
+                }
+
+            },
+
+            error: function (xhr) {
+
+                $("#loading").addClass("hidden");
+
+                console.error("GetPreview Error:", xhr.responseText);
+
+                showError("Terjadi kesalahan saat memuat preview quiz.");
+
+            }
+
+        });
+
+    }
+
+
+    // ==========================================
+    // RENDER PREVIEW
+    // ==========================================
+    function renderPreview(data) {
+
+        const $card = $("#preview-card");
+
+        $card.empty();
+
+        // HEADER
+        $card.append(`
+                <p class="text-2xl font-extrabold text-white leading-tight">
+                    ${escapeHtml(data.quiz_title || "Quiz")}
+                </p>
+                <p class="text-md text-gray-400 mt-1">
+                    ${data.total_question} questions &middot; Minimum score ${data.minimum_point}
+                </p>
+            `);
+
+        if (data.has_submission && data.latest_assessment) {
+
+            // ==========================================
+            // ALREADY SUBMITTED
+            // Show latest score instead of Start button
+            // ==========================================
+            const latest = data.latest_assessment;
+
+            $card.append(`
+                    <div class="
+                        mt-6
+                        p-5
+                        rounded-xl
+                        border
+                        ${latest.is_pass ? "border-[#20d8d0] bg-[#0f2b29]" : "border-red-500 bg-[#2b0f13]"}
+                    ">
+                        <p class="text-xs uppercase tracking-widest text-gray-400 mb-1">
+                            Last Submitted
+                        </p>
+                        <p class="text-xl font-extrabold ${latest.is_pass ? "text-[#20d8d0]" : "text-red-400"}">
+                            ${latest.is_pass ? "Lulus" : "Belum Lulus"}
+                        </p>
+                        <p class="text-sm text-gray-300 mt-1">
+                            Score: <span class="font-semibold text-white">${latest.total_point}</span>
+                            / Minimum: <span class="font-semibold text-white">${latest.minimum_point}</span>
+                        </p>
+                        ${latest.submit_date ? `
+                            <p class="text-xs text-gray-500 mt-2">
+                                Submitted at ${new Date(latest.submit_date).toLocaleDateString("en-GB", {
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric",
+                                })}
+                            </p>
+                        ` : ""}
+                    </div>
+
+                    ${latest.notes ? `
+                        <div class="mt-4 p-4 rounded-xl bg-[#151517] border border-gray-700 text-sm text-gray-300">
+                            ${escapeHtml(latest.notes)}
+                        </div>
+                    ` : ""}
+
+                    <div class="mt-6 flex flex-col sm:flex-row gap-3">
+
+                    <button
+                            onclick="goBack()"
+                            class="
+                                px-8
+                                py-3
+                                bg-transparent
+                                border
+                                border-gray-600
+                                hover:border-gray-400
+                                text-white
+                                font-bold
+                                tracking-widest
+                                rounded-lg
+                                transition
+                            "
+                        >
+                            Back
+                        </button>
+
+
+                        <button
+                            onclick="viewFeedback('${latest.assessment_id}')"
+                            class="
+                                px-8
+                                py-3
+                                bg-transparent
+                                border
+                                border-[#20d8d0]
+                                hover:bg-[#0f2b29]
+                                text-[#20d8d0]
+                                font-bold
+                                tracking-widest
+                                rounded-lg
+                                transition
+                            "
+                        >
+                            View Feedback
+                        </button>
+
+                        <button
+                            onclick="goToAssessment()"
+                            class="bg-[#4f1636] hover:bg-[#5d1b40]
+                           text-white font-semibold
+                           py-2 px-8 rounded-lg transition">
+                            Try Again
+                        </button>
+
+                    </div>
+                `);
+
+        } else {
+
+            // ==========================================
+            // NOT SUBMITTED YET
+            // Show Start + Back
+            // ==========================================
+            $card.append(`
+                    <div class="mt-6 flex flex-col sm:flex-row gap-3">
+
+                    <button
+                            onclick="goBack()"
+                            class="bg-gray-700 hover:bg-gray-600
+                              text-white font-semibold
+                              py-2 px-6 rounded-lg transition">
+                            Back
+                        </button>
+
+                        <button
+                            onclick="goToAssessment()"
+                            class="bg-[#4f1636] hover:bg-[#5d1b40]
+                           text-white font-semibold
+                           py-2 px-8 rounded-lg transition">
+                            Start
+                        </button>
+
+                    </div>
+                `);
+
+        }
+
+    }
+
+
+    // ==========================================
+    // GO TO ASSESSMENT (START / RETRY)
+    // ==========================================
+    function goToAssessment() {
+
+        window.location.href =
+            "/Assessment?series_id=" + encodeURIComponent(seriesId);
+
+    }
+
+
+    // ==========================================
+    // VIEW FEEDBACK (read-only detail of a past submission)
+    // ==========================================
+    function viewFeedback(assessmentId) {
+
+        window.location.href =
+            "/AssessmentFeedback?assessment_id=" + encodeURIComponent(assessmentId);
+
+    }
+
+
+    // ==========================================
+    // GO BACK TO EXPLORER
+    // ==========================================
+    function goBack() {
+
+        window.location.href = "/Audiobook/Explorer";
+
+    }
+
+
+    // ==========================================
+    // SHOW ERROR
+    // ==========================================
+    function showError(message) {
+
+        $("#error-box")
+            .removeClass("hidden")
+            .text(message);
+
+    }
+
+
+    // ==========================================
+    // ESCAPE HTML
+    // ==========================================
+    function escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+</script>

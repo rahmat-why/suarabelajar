@@ -1,0 +1,62 @@
+﻿@{
+    ViewBag.Title = "Admin Login";
+    Layout = "_LayoutPublic";
+}
+
+<div class="min-h-screen flex items-center justify-center bg-black dark:bg-gray-900 px-4">
+    <div class="shadow-xl rounded-2xl p-8 w-full max-w-md" style="background-color: #151517;">
+        <h2 class="text-2xl font-bold text-gray-100 mb-6 text-center">Admin Login</h2>
+
+        <p id="result" class="text-center mb-4 text-red-500"></p>
+
+        <div class="mb-4">
+            <label for="username" class="block text-gray-200 font-medium mb-1">Username</label>
+            <input type="text" id="username" placeholder="Username"
+                   class="w-full px-4 py-2 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800 text-white" required />
+        </div>
+
+        <div class="mb-6">
+            <label for="password" class="block text-gray-200 font-medium mb-1">Password</label>
+            <input type="password" id="password" placeholder="Password"
+                   class="w-full px-4 py-2 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-800 text-white" required />
+        </div>
+
+        <div class="text-center">
+            <button id="loginBtn"
+                    class="w-full bg-blue-800 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200">
+                Login
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#loginBtn").click(function (e) {
+        e.preventDefault();
+
+        const payload = {
+            username: $("#username").val().trim(),
+            password: $("#password").val().trim()
+        };
+
+        $.ajax({
+            url: "/login",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(payload),
+            success: function (res) {
+                if (res.code === 200) {
+                    $("#result").removeClass("text-red-500").addClass("text-green-500").text(res.message);
+                    setTimeout(() => {
+                        window.location.href = "/admin/codeactivation";
+                    }, 800);
+                } else {
+                    $("#result").removeClass("text-green-500").addClass("text-red-500").text(res.message);
+                }
+            },
+            error: function () {
+                $("#result").removeClass("text-green-500").addClass("text-red-500").text("Login failed. Please try again.");
+            }
+        });
+    });
+</script>

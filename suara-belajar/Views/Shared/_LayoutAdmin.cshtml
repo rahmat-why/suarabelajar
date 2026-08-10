@@ -1,0 +1,168 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - Suara Belajar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body class="h-screen flex bg-gray-100 text-gray-800 overflow-hidden">
+
+    <!-- Mobile Overlay -->
+    <div id="overlay"
+         class="fixed inset-0 bg-black bg-opacity-50 hidden z-20 lg:hidden"
+         onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar"
+           class="fixed lg:static inset-y-0 left-0 z-30
+                  w-64 bg-blue-900 text-white
+                  transform -translate-x-full lg:translate-x-0
+                  transition-transform duration-300
+                  flex flex-col">
+
+        <!-- Logo -->
+        <div class="p-6 text-center border-b border-blue-700">
+            <h1 class="text-lg font-semibold leading-tight">
+                suarabelajar.com <br>
+                jagobacain & islambercerita
+            </h1>
+        </div>
+
+        <!-- Menu -->
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <a href="/admin/codeactivation"
+               class="menu-link block px-4 py-2 rounded hover:bg-blue-700 transition">
+                Serial Number
+            </a>
+
+            <a href="/admin/codeactivation/generate"
+               class="menu-link block px-4 py-2 rounded hover:bg-blue-700 transition">
+                Generate
+            </a>
+
+            @*
+            <a href="/admin/audiobook/index"
+               class="menu-link block px-4 py-2 rounded hover:bg-blue-700 transition">
+                Audiobook
+            </a>
+
+            <a href="/admin/package/index"
+               class="menu-link block px-4 py-2 rounded hover:bg-blue-700 transition">
+                Package
+            </a>
+
+            <a href="/admin/quiz/index"
+               class="menu-link block px-4 py-2 rounded hover:bg-blue-700 transition">
+                Quiz
+            </a>
+
+            <a href="/admin/reading/index"
+               class="menu-link block px-4 py-2 rounded hover:bg-blue-700 transition">
+                Summary
+            </a>
+
+            <a href="/admin/series/index"
+               class="menu-link block px-4 py-2 rounded hover:bg-blue-700 transition">
+                Series
+            </a>
+            *@
+        </nav>
+
+        <!-- Logout -->
+        <div class="p-4 border-t border-blue-700">
+            <a href="/logout"
+               class="block px-4 py-2 rounded hover:bg-blue-700 transition text-red-400">
+                Logout
+            </a>
+        </div>
+
+    </aside>
+
+
+    <!-- Main Area -->
+    <div class="flex-1 flex flex-col min-h-screen">
+
+        <!-- Topbar (Mobile) -->
+        <header class="bg-white shadow-sm p-4 flex items-center justify-between lg:hidden">
+
+            <button onclick="toggleSidebar()"
+                    class="text-gray-700 focus:outline-none">
+
+                <!-- Hamburger Icon -->
+                <svg class="w-6 h-6" fill="none" stroke="currentColor"
+                     stroke-width="2" viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+
+            </button>
+
+            <h2 class="font-semibold text-sm">Suara Belajar</h2>
+
+        </header>
+
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
+            @RenderBody()
+        </main>
+
+    </div>
+
+
+    <!-- Scripts -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const overlay = document.getElementById("overlay");
+
+            sidebar.classList.toggle("-translate-x-full");
+            overlay.classList.toggle("hidden");
+        }
+
+        $(document).ready(function () {
+
+            // Highlight active menu
+            const currentPath = window.location.pathname.toLowerCase();
+
+            $(".menu-link").each(function () {
+                const linkPath = $(this).attr("href").toLowerCase();
+
+                if (currentPath === linkPath) {
+                    $(this).addClass("bg-blue-700 font-bold");
+                } else {
+                    $(this).removeClass("bg-blue-700 font-bold");
+                }
+            });
+
+        });
+
+        function formatDate(dateString) {
+            if (!dateString || typeof dateString !== "string" || dateString === "{}") return "-";
+
+            const match = dateString.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+            if (!match) return dateString;
+
+            const year = match[1];
+            const monthIndex = parseInt(match[2], 10) - 1;
+            const day = match[3];
+            const hours = match[4];
+            const minutes = match[5];
+
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+            return `${day} ${months[monthIndex]} ${year} ${hours}:${minutes}`;
+        }
+    </script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>

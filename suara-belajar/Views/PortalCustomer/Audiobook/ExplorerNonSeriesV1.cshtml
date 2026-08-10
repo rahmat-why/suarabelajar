@@ -1,0 +1,336 @@
+@{
+    ViewData["Title"] = "Explorer";
+    Layout = "_LayoutCustomer";
+
+    var pkg = ViewBag.Package;
+    string pkgId = pkg != null ? (string)pkg.package_id : "";
+    string headerTitle = pkg != null ? (string)pkg.header_title : "";
+}
+
+<p class="text-2xl font-extrabold text-white leading-tight mt-2">
+    Platform Audio-Learning<br>
+    No. 1 di Indonesia
+</p>
+
+<p class="text-xl text-white leading-tight mt-2">
+    Terinspirasi Dari Banyak Ilmu Pengetahuan di Dunia
+</p>
+
+<div class="space-y-4 mt-4">
+    <div class="border-b border-gray-700">
+        <button class="pb-2 px-1 text-white border-b-2 border-white font-semibold cursor-default">
+            @headerTitle
+        </button>
+    </div>
+
+    <div id="flat-list"
+         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    </div>
+</div>
+
+<div id="loading" class="text-center py-6 hidden">
+    <span class="text-gray-500 font-medium">Loading...</span>
+</div>
+
+<script>
+    let skip = 0;
+    let isLoading = false;
+    let isEnd = false;
+
+    const PACKAGE_ID = "@Html.Raw(System.Text.Json.JsonEncodedText.Encode(pkgId ?? ""))";
+    const take = 8;
+
+
+    // ==========================================
+    // DOCUMENT READY
+    // ==========================================
+    $(document).ready(function () {
+        loadMore();
+    });
+
+
+    // ==========================================
+    // INFINITE SCROLL
+    // ==========================================
+    $(window).on("scroll", function () {
+
+        if (
+            !isLoading &&
+            !isEnd &&
+            $(window).scrollTop() + $(window).height()
+            >= $(document).height() - 150
+        ) {
+            loadMore();
+        }
+
+    });
+
+
+    // ==========================================
+    // LOAD MORE
+    // ==========================================
+    function loadMore() {
+
+        if (isLoading || isEnd) {
+            return;
+        }
+
+        isLoading = true;
+
+        $("#loading").removeClass("hidden");
+
+
+        $.ajax({
+
+            url: "/customer/explorer",
+
+            method: "POST",
+
+            contentType: "application/json",
+
+            data: JSON.stringify({
+                skip: skip,
+                take: take
+            }),
+
+            success: function (res) {
+
+                if (
+                    res &&
+                    res.code === 200 &&
+                    Array.isArray(res.data)
+                ) {
+
+                    if (res.data.length === 0) {
+
+                        isEnd = true;
+
+                    } else {
+
+                        renderFlat(res.data);
+
+                        skip += take;
+
+
+                        // Auto load when page is not tall enough
+                        setTimeout(
+                            autoLoadIfNoScroll,
+                            200
+                        );
+
+                    }
+
+                }
+
+                finishLoading();
+
+            },
+
+            error: function (xhr) {
+
+                console.error(
+                    "Explorer Error:",
+                    xhr.responseText
+                );
+
+                finishLoading();
+
+            }
+
+        });
+
+    }
+
+
+    // ==========================================
+    // FINISH LOADING
+    // ==========================================
+    function finishLoading() {
+
+        isLoading = false;
+
+        $("#loading")
+            .addClass("hidden");
+
+    }
+
+
+    // ==========================================
+    // AUTO LOAD IF PAGE IS NOT SCROLLABLE
+    // ==========================================
+    function autoLoadIfNoScroll() {
+
+        if (
+            !isEnd &&
+            !isLoading &&
+            $(document).height() <= $(window).height()
+        ) {
+
+            loadMore();
+
+        }
+
+    }
+
+
+    // ==========================================
+    // FLAT RENDER
+    // ==========================================
+    function renderFlat(items) {
+
+        if (!Array.isArray(items)) {
+            return;
+        }
+
+
+        items.forEach(function (item) {
+
+            $("#flat-list")
+                .append(
+                    renderCard(item)
+                );
+
+        });
+
+    }
+
+
+    // ==========================================
+    // RENDER CARD (audiobook only — non-series never has quiz items)
+    // ==========================================
+    function renderCard(item) {
+
+        return `
+
+                <div
+                    onclick="goToPlayer('${item.audiobook_id}')"
+                    class="
+                        relative
+                        bg-[#151517]
+                        rounded-xl
+                        shadow
+                        hover:shadow-lg
+                        transition
+                        cursor-pointer
+                        p-3
+                        sm:p-4
+                        flex
+                        gap-3
+                        sm:gap-4
+                    "
+                >
+
+                    <img
+                        src="/Audiobook/image/${PACKAGE_ID}/${item.cover_image}"
+                        class="
+                            w-16
+                            h-16
+                            sm:w-20
+                            sm:h-20
+                            rounded-lg
+                            object-cover
+                            flex-shrink-0
+                        "
+                    >
+
+
+                    <div class="
+                        flex
+                        flex-col
+                        justify-center
+                        pr-10
+                    ">
+
+                        <div class="
+                            text-sm
+                            sm:text-base
+                            font-semibold
+                            text-gray-100
+                            line-clamp-2
+                        ">
+
+                            ${escapeHtml(item.title)}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="
+                        absolute
+                        bottom-3
+                        right-3
+                        sm:bottom-4
+                        sm:right-4
+                    ">
+
+                        <div class="
+                            w-9
+                            h-9
+                            bg-[#4f1636]
+                            hover:bg-[#5d1b40]
+                            rounded-full
+                            flex
+                            items-center
+                            justify-center
+                            shadow-lg
+                        ">
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="white"
+                                class="
+                                    w-4
+                                    h-4
+                                    ml-0.5
+                                "
+                            >
+
+                                <path d="M8 5v14l11-7z" />
+
+                            </svg>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+    }
+
+
+    // ==========================================
+    // GO TO AUDIOBOOK PLAYER
+    // ==========================================
+    function goToPlayer(id) {
+
+        window.location.href =
+            "/Audiobook/Player?audiobook_id=" +
+            encodeURIComponent(id);
+
+    }
+
+
+    // ==========================================
+    // ESCAPE HTML
+    // Prevent HTML injection from API data
+    // ==========================================
+    function escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+</script>
