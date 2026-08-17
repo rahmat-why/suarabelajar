@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\suara-belajar.props" />
-</Project>
