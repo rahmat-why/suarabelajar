@@ -43,6 +43,13 @@
                 <label for="isSeries" class="text-sm font-medium text-gray-700 dark:text-gray-300">Is Series Package</label>
             </div>
 
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Explorer Styling Version</label>
+                <input type="text" id="explorerStylingVersion"
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                       placeholder="e.g. v2.1" />
+            </div>
+
             <div class="flex gap-3">
                 <a href="/admin/package/index"
                    class="w-full text-center py-2 rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium transition">
@@ -86,6 +93,7 @@
             formData.append("PackageId", packageId);
             formData.append("Name", name);
             formData.append("IsSeries", $("#isSeries").is(":checked"));
+            formData.append("ExplorerStylingVersion", $("#explorerStylingVersion").val().trim());
             formData.append("IsEdit", "false");
 
             const fileInput = $("#logoFile")[0];

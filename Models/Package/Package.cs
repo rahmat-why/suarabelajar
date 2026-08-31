@@ -44,5 +44,6 @@ namespace suara_belajar.Models
         public bool IsSeries { get; set; }
         public bool IsEdit { get; set; }
         public IFormFile LogoFile { get; set; } // opsional, nullable saat edit tanpa ganti logo
+        public string ExplorerStylingVersion { get; set; }
     }
 }

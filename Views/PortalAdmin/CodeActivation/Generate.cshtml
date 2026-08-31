@@ -13,13 +13,13 @@
         <label class="block text-gray-700 dark:text-gray-200 font-medium mb-1">
             Package:
         </label>
+
         <select id="package"
                 class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
-                       dark:bg-gray-700 dark:text-white">
+                   dark:bg-gray-700 dark:text-white">
+
             <option value="">-- Select Package --</option>
-            <option value="jagobacain">Jagobacain</option>
-            <option value="islambercerita">Islambercerita</option>
-            <option value="jagobacain V2">Jagobacain V2</option>
+
         </select>
     </div>
 
@@ -52,67 +52,244 @@
 
     <p id="result" class="font-medium"></p>
 </div>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
-    $(function () {
+    $(document).ready(function () {
 
         const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
+        // ==========================================
+        // Generate random code
+        // ==========================================
         function generateCode() {
             let code = "";
-            for (let i = 0; i < 8; i++)
+
+            for (let i = 0; i < 8; i++) {
                 code += chars[Math.floor(Math.random() * chars.length)];
+            }
+
             return "SB-" + code;
         }
 
-        $("#numberOfCodes").on("input", function () {
-            let count = Math.min(Math.max(parseInt(this.value) || 0, 0), 100);
-            this.value = count;
 
-            $("#codesList").empty();
-            for (let i = 0; i < count; i++)
-                $("#codesList").append(`<li>${generateCode()}</li>`);
-        });
-
-        $("#generateBtn").click(function () {
-            const number = parseInt($("#numberOfCodes").val());
-            const packageName = $("#package").val();
-
-            if (!packageName) {
-                alert("Please select package");
-                return;
-            }
-
-            if (!number || number < 1) {
-                alert("Invalid number");
-                return;
-            }
+        // ==========================================
+        // Load packages from database
+        // ==========================================
+        function loadPackages() {
 
             $.ajax({
-                url: "/admin/codeactivation/generate",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({
-                    Data: number.toString(),
-                    Package: packageName
-                }),
-                success: function (res) {
-                    $("#codesList").empty();
-                    if (res.code === 200) {
-                        res.data.forEach(x => $("#codesList").append(`<li>${x}</li>`));
-                        $("#result").text(res.message).removeClass("text-red-500").addClass("text-green-500");
+                url: "/admin/codeactivation/packages",
+                type: "GET",
 
-                        // redirect ke /admin/codeactivation setelah 1 detik
-                        setTimeout(function () {
-                            window.location.href = "/admin/codeactivation";
-                        }, 1000);
-                    } else {
-                        $("#result").text(res.message).addClass("text-red-500");
+                success: function (response) {
+
+                    if (!response.success) {
+                        console.error(response.error);
+                        return;
                     }
+
+                    const packageSelect = $("#package");
+
+                    // Clear existing options
+                    packageSelect.empty();
+
+                    // Default option
+                    packageSelect.append(
+                        $("<option>", {
+                            value: "",
+                            text: "-- Select Package --"
+                        })
+                    );
+
+                    // Add packages
+                    response.data.forEach(function (item) {
+
+                        packageSelect.append(
+                            $("<option>", {
+                                value: item.package_id,
+                                text: item.name
+                            })
+                        );
+
+                    });
+
+                },
+
+                error: function (xhr, status, error) {
+                    console.error("Failed to load packages:", error);
+                    console.error(xhr.responseText);
                 }
             });
+
+        }
+
+
+        // ==========================================
+        // Number of codes input
+        // ==========================================
+        $("#numberOfCodes").on("input", function () {
+
+            let count = parseInt(this.value) || 0;
+
+            // Limit 0 - 100
+            count = Math.min(Math.max(count, 0), 100);
+
+            this.value = count;
+
+            // Clear previous codes
+            $("#codesList").empty();
+
+            // Generate preview codes
+            for (let i = 0; i < count; i++) {
+
+                $("#codesList").append(
+                    $("<li>").text(generateCode())
+                );
+
+            }
+
         });
+
+
+        // ==========================================
+        // Generate button
+        // ==========================================
+        $("#generateBtn").click(function (e) {
+
+            e.preventDefault();
+
+            const number = parseInt($("#numberOfCodes").val()) || 0;
+
+            // Get package_id
+            const packageId = $("#package").val();
+
+
+            // ==========================================
+            // Validation
+            // ==========================================
+            if (!packageId) {
+
+                alert("Please select package");
+
+                $("#package").focus();
+
+                return;
+            }
+
+
+            if (number < 1 || number > 100) {
+
+                alert("Please enter a number between 1 and 100");
+
+                $("#numberOfCodes").focus();
+
+                return;
+            }
+
+
+            // Disable button to prevent double click
+            $("#generateBtn")
+                .prop("disabled", true)
+                .text("Generating...");
+
+
+            // ==========================================
+            // Send request to server
+            // ==========================================
+            $.ajax({
+
+                url: "/admin/codeactivation/generate",
+
+                type: "POST",
+
+                contentType: "application/json",
+
+                data: JSON.stringify({
+                    Data: number.toString(),
+                    Package: packageId
+                }),
+
+                success: function (res) {
+
+                    $("#codesList").empty();
+
+
+                    if (res.code === 200) {
+
+                        // Show generated codes
+                        if (res.data && res.data.length > 0) {
+
+                            res.data.forEach(function (code) {
+
+                                $("#codesList").append(
+                                    $("<li>").text(code)
+                                );
+
+                            });
+
+                        }
+
+
+                        // Show success message
+                        $("#result")
+                            .text(res.message)
+                            .removeClass("text-red-500")
+                            .addClass("text-green-500");
+
+
+                        // Redirect after 1 second
+                        setTimeout(function () {
+
+                            window.location.href =
+                                "/admin/codeactivation";
+
+                        }, 1000);
+
+                    } else {
+
+                        $("#result")
+                            .text(res.message || "Failed to generate codes")
+                            .removeClass("text-green-500")
+                            .addClass("text-red-500");
+
+
+                        // Enable button again
+                        $("#generateBtn")
+                            .prop("disabled", false)
+                            .text("Generate");
+
+                    }
+
+                },
+
+                error: function (xhr, status, error) {
+
+                    console.error("Generate error:", error);
+                    console.error(xhr.responseText);
+
+                    $("#result")
+                        .text("An error occurred while generating codes.")
+                        .removeClass("text-green-500")
+                        .addClass("text-red-500");
+
+
+                    // Enable button again
+                    $("#generateBtn")
+                        .prop("disabled", false)
+                        .text("Generate");
+
+                }
+
+            });
+
+        });
+
+
+        // ==========================================
+        // Initial load
+        // ==========================================
+        loadPackages();
 
     });
 </script>

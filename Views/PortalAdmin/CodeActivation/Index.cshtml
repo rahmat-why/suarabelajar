@@ -33,11 +33,9 @@
                     <option value="Not Active">Not Active</option>
                 </select>
 
-                <select id="packageFilter" class="px-4 py-2 border rounded-lg dark:bg-gray-700 dark:text-white">
+                <select id="packageFilter"
+                        class="px-4 py-2 border rounded-lg dark:bg-gray-700 dark:text-white">
                     <option value="">ALL Package</option>
-                    <option value="jagobacain">Jagobacain</option>
-                    <option value="islambercerita">Islambercerita</option>
-                    <option value="jagobacain V2">Jagobacain V2</option>
                 </select>
             </div>
         </div>
@@ -179,5 +177,60 @@
         $('#logModal').addClass('hidden').removeClass('flex');
     });
 
+    function loadPackageFilter() {
+
+        $.ajax({
+            url: "/admin/codeactivation/packages",
+            type: "GET",
+
+            success: function (response) {
+
+                if (!response.success) {
+                    console.error(response.error);
+                    return;
+                }
+
+                const packageFilter = $("#packageFilter");
+
+                // Clear existing options
+                packageFilter.empty();
+
+                // Default option
+                packageFilter.append(
+                    $("<option>", {
+                        value: "",
+                        text: "ALL Package"
+                    })
+                );
+
+                // Load packages
+                response.data.forEach(function (item) {
+
+                    packageFilter.append(
+                        $("<option>", {
+                            value: item.package_id,
+                            text: item.name
+                        })
+                    );
+
+                });
+
+            },
+
+            error: function (xhr, status, error) {
+
+                console.error(
+                    "Failed to load package filter:",
+                    error
+                );
+
+                console.error(xhr.responseText);
+            }
+        });
+
+    }
+
     loadData();
+
+    loadPackageFilter();
 </script>

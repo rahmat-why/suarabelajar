@@ -14,30 +14,55 @@ namespace suara_belajar.Models
     public class QuizQuestionDto
     {
         public string QuizQuestionId { get; set; }
+
         public string Question { get; set; }
-        public string QuestionType { get; set; } // "single_choice" | "multiple_choice"
+
+        public string QuestionType { get; set; }
+
         public int Point { get; set; }
-        public List<QuizOptionDto> Options { get; set; } = new List<QuizOptionDto>();
+
+        public string ReasonCorrect { get; set; }
+
+        public List<QuizOptionDto> Options { get; set; }
+            = new();
     }
 
     // ===================== DETAIL (get by id, populate form Edit) =====================
     public class QuizDetail
     {
         public string QuizId { get; set; }
-        public string AudiobookId { get; set; }
+
+        public string SeriesId { get; set; }
+
         public string Title { get; set; }
+
         public int MinimumPoint { get; set; }
-        public List<QuizQuestionDto> Questions { get; set; } = new List<QuizQuestionDto>();
+
+        public string Notes1 { get; set; }
+
+        public string Notes2 { get; set; }
+
+        public List<QuizQuestionDto> Questions { get; set; } = new();
     }
 
     // ===================== REQUEST: SAVE (create/update, JSON body) =====================
     public class QuizSaveRequest
     {
         public bool IsEdit { get; set; }
+
         public string QuizId { get; set; }
-        public string AudiobookId { get; set; }
+
+        public string SeriesId { get; set; }
+
         public string Title { get; set; }
+
         public int MinimumPoint { get; set; }
-        public List<QuizQuestionDto> Questions { get; set; } = new List<QuizQuestionDto>();
+
+        public string Notes1 { get; set; }
+
+        public string Notes2 { get; set; }
+
+        public List<QuizQuestionDto> Questions { get; set; }
+            = new();
     }
 }

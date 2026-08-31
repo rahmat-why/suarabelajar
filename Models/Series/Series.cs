@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
 
 namespace suara_belajar.Models
 {
@@ -9,6 +10,7 @@ namespace suara_belajar.Models
         public string PackageId { get; set; }
         public string PackageName { get; set; }
         public string Name { get; set; }
+        public string CoverImage { get; set; }
         public int Sequence { get; set; }
         public DateTime? DeletedDate { get; set; }
         public DateTime CreatedDate { get; set; }
@@ -21,10 +23,11 @@ namespace suara_belajar.Models
         public string SeriesId { get; set; }
         public string PackageId { get; set; }
         public string Name { get; set; }
+        public string CoverImage { get; set; }
         public int Sequence { get; set; }
     }
 
-    // ===================== REQUEST: SAVE (create / update, JSON body) =====================
+    // ===================== REQUEST: SAVE (create / update, multipart/form-data) =====================
     public class SeriesSaveRequest
     {
         public bool IsEdit { get; set; }
@@ -32,5 +35,7 @@ namespace suara_belajar.Models
         public string PackageId { get; set; }
         public string Name { get; set; }
         public int Sequence { get; set; }
+
+        public IFormFile CoverFile { get; set; }
     }
 }

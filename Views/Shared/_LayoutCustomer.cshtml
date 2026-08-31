@@ -17,63 +17,45 @@
 </head>
 
 
-<body class="relative text-gray-200 min-h-screen flex flex-col bg-cover bg-no-repeat bg-center md:bg-top"
-      style="background-image: url('/background.png');">
-    <div class="absolute inset-0 bg-black/60 -z-10"></div>
+<body class="relative text-gray-200 min-h-screen flex flex-col">
+
+    <!-- Background layer (fixed to viewport, won't stretch/zoom on tall pages) -->
+    <div class="fixed inset-0 bg-cover bg-no-repeat bg-center md:bg-top -z-20"
+         style="background-image: url('/newbg.png');"></div>
+    <div class="fixed inset-0 bg-black/80 -z-10"></div> 
 
     <!-- Header -->
     <header class="border-b border-gray-700 bg-black">
         <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-
             <!-- LEFT: TITLE + PACKAGES -->
             <div>
                 <h1 class="text-xl text-white font-semibold">
                     suarabelajar.com
                 </h1>
+                <div class="flex items-center gap-4 mt-2 text-sm text-white/70">
+                    <span class="flex items-center gap-2">
+                        <img src="/jagobacainv2.png"
+                             alt="Jagobacain"
+                             class="w-6 h-6 object-contain">
+                        jagobacain
+                    </span>
 
-                @if (package.Equals("jagobacain", StringComparison.OrdinalIgnoreCase)
-                || package.Equals("jagobacain v2", StringComparison.OrdinalIgnoreCase))
-                {
-                    <div class="flex items-center gap-4 mt-2 text-sm text-white/70">
-                        <span class="flex items-center gap-2">
-                            <img src="/jagobacain.png" alt="Jagobacain" class="w-6 h-6 object-contain">
-                            jagobacain
-                        </span>
-                    </div>
-                }
-                else if (package.Equals("islambercerita", StringComparison.OrdinalIgnoreCase))
-                {
-                    <div class="flex items-center gap-4 mt-2 text-sm text-white/70">
-                        <span class="flex items-center gap-2">
-                            <img src="/islambercerita.png" alt="Islam Bercerita" class="w-6 h-6 object-contain">
-                            islambercerita
-                        </span>
-                    </div>
-                }
-                else
-                {
-                    <div class="flex items-center gap-4 mt-2 text-sm text-white/70">
-                        <span class="flex items-center gap-2">
-                            <img src="/jagobacain.png" alt="Jagobacain" class="w-6 h-6 object-contain">
-                            jagobacain
-                        </span>
-                        <span class="flex items-center gap-2">
-                            <img src="/islambercerita.png" alt="Islam Bercerita" class="w-6 h-6 object-contain">
-                            islambercerita
-                        </span>
-                    </div>
-                }
+                    <span class="flex items-center gap-2">
+                        <img src="/islambercerita.png"
+                             alt="Islam Bercerita"
+                             class="w-6 h-6 object-contain">
+                        islambercerita
+                    </span>
+                </div>
             </div>
-
             <!-- RIGHT: PROFILE BUTTON -->
             @if (package != "Trial")
             {
-                <div class="relative">
+                <div class="relative flex flex-col items-center">
                     <button id="profileBtn"
                             aria-label="Profile"
                             class="w-11 h-11 rounded-full bg-white flex items-center justify-center
-                           shadow-lg transition transform hover:scale-105">
-
+           shadow-lg transition transform hover:scale-105">
                         <svg xmlns="http://www.w3.org/2000/svg"
                              viewBox="0 0 24 24"
                              fill="none"
@@ -81,26 +63,29 @@
                              stroke-width="1.8"
                              stroke-linecap="round"
                              stroke-linejoin="round"
-                             class="w-6 h-6">
+                             class="w-7 h-7">
                             <path d="M20 21a8 8 0 0 0-16 0" />
                             <circle cx="12" cy="7" r="4" />
                         </svg>
                     </button>
 
+                    <span class="mt-1 text-[13px] font-medium text-white/80 leading-none whitespace-nowrap">
+                        Logout
+                    </span>
+
                     <!-- Profile Popup -->
                     <div id="profilePopup"
-                         class="hidden absolute right-0 mt-3 w-72 bg-white text-black
-                        rounded-xl shadow-xl p-4 z-50">
+                         class="hidden absolute right-0 top-full mt-2 w-72 bg-white text-black
+        rounded-xl shadow-xl p-4 z-50">
                         <p class="text-sm leading-relaxed mb-4">
                             <strong>Halo Member suarabelajar.com</strong> 👋<br>
                             Saat ini kamu berlangganan
                             <span class="font-semibold text-indigo-600">@package</span>.
                         </p>
-
                         <form method="post" action="/customer/logout">
                             <button type="submit"
                                     class="w-full py-2 rounded-lg bg-[#4f1636] hover:bg-[#5d1b40]
-                                   text-white transition">
+                   text-white transition">
                                 Logout
                             </button>
                         </form>

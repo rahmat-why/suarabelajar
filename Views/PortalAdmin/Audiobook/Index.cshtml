@@ -162,15 +162,15 @@
                     } else {
                         res.data.forEach(row => {
                             const coverImg = row.cover_image
-                                ? `<img src="/Audiobook/image/${row.package_name}/${row.cover_image}?v=${encodeURIComponent(row.updated_date || row.created_date || '')}"
+                                ? `<img src="/Audiobook/image/${row.package_id}/${row.cover_image}?v=${encodeURIComponent(row.updated_date || row.created_date || '')}"
                                         alt="${row.title || 'Cover'}"
                                         class="w-12 h-16 object-cover rounded shadow">`
                                 : `<div class="w-12 h-16 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500">
                                         No Image
                                    </div>`;
 
-                            const audioUrl = `/Audiobook/audio/${row.package_name}/${row.audiobook_id}.mp3`;
-                            const seriesLabel = row.series_name ? `${row.package_name} - ${row.series_name}` : (row.series_id || '-');
+                            const audioUrl = `/Audiobook/audio/${row.package_id}/${row.audiobook_id}.mp3`;
+                            const seriesLabel = row.series_name ? `${row.package_id} - ${row.series_name}` : (row.series_id || '-');
 
                             const playButton = `
                                     <button onclick="playAudio('${audioUrl}', '${(row.title || 'Audiobook').replace(/'/g, "\\'")}')"

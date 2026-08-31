@@ -40,6 +40,21 @@
                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
             </div>
 
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Cover Image
+                </label>
+
+                <input type="file"
+                       id="coverFile"
+                       accept=".jpg,.jpeg,.png,.webp"
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
+                  focus:outline-none focus:ring-2 focus:ring-blue-500
+                  dark:bg-gray-700 dark:text-white" />
+
+                <div id="currentCover" class="mt-2 text-sm text-gray-500"></div>
+            </div>
+
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sequence</label>
                 <input type="number" id="sequence" min="1"
@@ -99,6 +114,11 @@
                         $("#seriesId").val(res.data.series_id);
                         $("#packageId").val(res.data.package_id);
                         $("#seriesName").val(res.data.name);
+                        $("#currentCover").html(
+                            res.data.cover_image
+                                ? `Current: ${res.data.cover_image}`
+                                : "No cover image"
+                        );
                         $("#sequence").val(res.data.sequence);
                     } else {
                         alert(res.message || "Series not found.");
@@ -112,7 +132,7 @@
             });
         }
 
-        $("#seriesForm").on("submit", function (e) {
+            $("#seriesForm").on("submit", function (e) {
             e.preventDefault();
 
             const packageId = $("#packageId").val();
@@ -126,17 +146,24 @@
 
             $("button[type=submit]").prop("disabled", true).text("Saving...");
 
+            const formData = new FormData();
+            formData.append("IsEdit", "true");
+            formData.append("SeriesId", seriesId);
+            formData.append("PackageId", packageId);
+            formData.append("Name", name);
+            formData.append("Sequence", sequence);
+
+            const coverFile = $("#coverFile")[0].files[0];
+            if (coverFile) {
+                formData.append("CoverFile", coverFile);
+            }
+
             $.ajax({
                 url: '/admin/series/save',
                 type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    IsEdit: true,
-                    SeriesId: seriesId,
-                    PackageId: packageId,
-                    Name: name,
-                    Sequence: parseInt(sequence)
-                }),
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function (res) {
                     if (res.code === 200) {
                         window.location.href = "/admin/series/index";

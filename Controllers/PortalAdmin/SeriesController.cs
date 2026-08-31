@@ -113,6 +113,7 @@ namespace suara_belajar.Controllers.PortalAdmin
                 s.package_id,
                 p.name AS package_name,
                 s.name,
+                s.cover_image,
                 s.sequence,
                 s.deleted_date,
                 s.created_date,
@@ -141,6 +142,7 @@ namespace suara_belajar.Controllers.PortalAdmin
                             package_id = reader["package_id"].ToString(),
                             package_name = reader["package_name"]?.ToString(),
                             name = reader["name"]?.ToString(),
+                            cover_image = reader["cover_image"] == DBNull.Value ? null : reader["cover_image"]?.ToString(),
                             sequence = Convert.ToInt32(reader["sequence"]),
                             deleted_date = reader["deleted_date"] == DBNull.Value ? null : (DateTime?)reader["deleted_date"],
                             created_date = reader["created_date"] == DBNull.Value ? null : (DateTime?)reader["created_date"],
@@ -188,7 +190,7 @@ namespace suara_belajar.Controllers.PortalAdmin
                 conn.Open();
 
                 using var cmd = new SqlCommand(
-                    "SELECT series_id, package_id, name, sequence FROM txn_series WHERE series_id = @SeriesId", conn);
+                    "SELECT series_id, package_id, name, cover_image, sequence FROM txn_series WHERE series_id = @SeriesId", conn);
                 cmd.Parameters.AddWithValue("@SeriesId", id);
 
                 using var reader = cmd.ExecuteReader();
@@ -199,6 +201,9 @@ namespace suara_belajar.Controllers.PortalAdmin
                         series_id = reader["series_id"].ToString(),
                         package_id = reader["package_id"].ToString(),
                         name = reader["name"]?.ToString(),
+                        cover_image = reader["cover_image"] == DBNull.Value
+                            ? null
+                            : reader["cover_image"]?.ToString(),
                         sequence = Convert.ToInt32(reader["sequence"])
                     };
 
@@ -218,7 +223,7 @@ namespace suara_belajar.Controllers.PortalAdmin
         // ===============================
         [HttpPost]
         [Route("admin/series/save")]
-        public IActionResult Save([FromBody] SeriesSaveRequest req)
+        public IActionResult Save([FromForm] SeriesSaveRequest req)
         {
             try
             {
@@ -234,99 +239,358 @@ namespace suara_belajar.Controllers.PortalAdmin
                     });
                 }
 
-                using var conn = new SqlConnection(_config.GetConnectionString("DefaultConnection"));
+                using var conn = new SqlConnection(
+                    _config.GetConnectionString("DefaultConnection")
+                );
+
                 conn.Open();
 
-                // Pastikan package_id valid & masih active
-                using (var checkPkg = new SqlCommand(
-                    "SELECT COUNT(*) FROM mst_package WHERE package_id = @PackageId AND deleted_date IS NULL", conn))
+                // ==========================================
+                // VALIDATE PACKAGE
+                // ==========================================
+                string packageId;
+
+                using (var checkPkg = new SqlCommand(@"
+            SELECT package_id
+            FROM mst_package
+            WHERE package_id = @PackageId
+              AND deleted_date IS NULL
+        ", conn))
                 {
                     checkPkg.Parameters.AddWithValue("@PackageId", req.PackageId);
-                    int pkgExists = (int)checkPkg.ExecuteScalar();
-                    if (pkgExists == 0)
-                        return Json(new ResponseDto { Code = 400, Message = "Selected package is invalid or inactive." });
+
+                    var result = checkPkg.ExecuteScalar();
+
+                    if (result == null || result == DBNull.Value)
+                    {
+                        return Json(new ResponseDto
+                        {
+                            Code = 400,
+                            Message = "Selected package is invalid or inactive."
+                        });
+                    }
+
+                    packageId = result.ToString();
                 }
+
+                // ==========================================
+                // FOLDER IMAGE
+                // wwwroot/Audiobook/image/{package_id}
+                // ==========================================
+                string imageFolder = Path.Combine(
+                    _env.WebRootPath,
+                    "Audiobook",
+                    "image",
+                    packageId
+                );
+
+                if (!Directory.Exists(imageFolder))
+                    Directory.CreateDirectory(imageFolder);
+
+                // ==========================================
+                // GET OLD PACKAGE
+                // penting kalau package diganti saat edit
+                // ==========================================
+                string oldPackageId = null;
 
                 if (req.IsEdit)
                 {
-                    // ===== UPDATE =====
-                    if (string.IsNullOrWhiteSpace(req.SeriesId))
-                        return Json(new ResponseDto { Code = 400, Message = "Series ID is required for update." });
+                    using var getOld = new SqlCommand(@"
+                SELECT package_id
+                FROM txn_series
+                WHERE series_id = @SeriesId
+            ", conn);
 
-                    using var cmd = new SqlCommand(@"
-                        UPDATE txn_series
-                        SET
-                            package_id = @PackageId,
-                            name = @Name,
-                            sequence = @Sequence,
-                            updated_date = GETDATE()
-                        WHERE series_id = @SeriesId", conn);
+                    getOld.Parameters.AddWithValue("@SeriesId", req.SeriesId);
 
-                    cmd.Parameters.AddWithValue("@SeriesId", req.SeriesId);
-                    cmd.Parameters.AddWithValue("@PackageId", req.PackageId);
-                    cmd.Parameters.AddWithValue("@Name", req.Name);
-                    cmd.Parameters.AddWithValue("@Sequence", req.Sequence);
+                    var oldResult = getOld.ExecuteScalar();
+
+                    if (oldResult != null && oldResult != DBNull.Value)
+                        oldPackageId = oldResult.ToString();
+                }
+
+                // ==========================================
+                // UPLOAD COVER
+                // ==========================================
+                string coverFileName = null;
+
+                if (req.CoverFile != null && req.CoverFile.Length > 0)
+                {
+                    string ext = Path.GetExtension(req.CoverFile.FileName);
+
+                    // Batasi extension
+                    var allowedExtensions = new[]
+                    {
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".webp"
+            };
+
+                    if (!allowedExtensions.Contains(
+                        ext,
+                        StringComparer.OrdinalIgnoreCase))
+                    {
+                        return Json(new ResponseDto
+                        {
+                            Code = 400,
+                            Message = "Cover image must be JPG, JPEG, PNG, or WEBP."
+                        });
+                    }
+
+                    coverFileName = $"{req.SeriesId}{ext}";
+
+                    string coverPath = Path.Combine(
+                        imageFolder,
+                        coverFileName
+                    );
+
+                    // Hapus cover lama dengan extension berbeda
+                    var oldCovers = Directory.GetFiles(
+                        imageFolder,
+                        $"{req.SeriesId}.*"
+                    );
+
+                    foreach (var oldFile in oldCovers)
+                    {
+                        if (!oldFile.Equals(
+                            coverPath,
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            System.IO.File.Delete(oldFile);
+                        }
+                    }
+
+                    using var stream = new FileStream(
+                        coverPath,
+                        FileMode.Create
+                    );
+
+                    req.CoverFile.CopyTo(stream);
+                }
+
+                // ==========================================
+                // UPDATE
+                // ==========================================
+                if (req.IsEdit)
+                {
+                    string sql;
+
+                    if (coverFileName != null)
+                    {
+                        sql = @"
+                    UPDATE txn_series
+                    SET
+                        package_id = @PackageId,
+                        name = @Name,
+                        sequence = @Sequence,
+                        cover_image = @CoverImage,
+                        updated_date = GETDATE()
+                    WHERE series_id = @SeriesId";
+                    }
+                    else
+                    {
+                        sql = @"
+                    UPDATE txn_series
+                    SET
+                        package_id = @PackageId,
+                        name = @Name,
+                        sequence = @Sequence,
+                        updated_date = GETDATE()
+                    WHERE series_id = @SeriesId";
+                    }
+
+                    using var cmd = new SqlCommand(sql, conn);
+
+                    cmd.Parameters.AddWithValue(
+                        "@SeriesId",
+                        req.SeriesId
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@PackageId",
+                        req.PackageId
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@Name",
+                        req.Name
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@Sequence",
+                        req.Sequence
+                    );
+
+                    if (coverFileName != null)
+                    {
+                        cmd.Parameters.AddWithValue(
+                            "@CoverImage",
+                            coverFileName
+                        );
+                    }
 
                     int rows = cmd.ExecuteNonQuery();
 
                     if (rows == 0)
-                        return Json(new ResponseDto { Code = 404, Message = "Series not found." });
-
-                    return Json(new ResponseDto { Code = 200, Message = "Series updated successfully." });
-                }
-                else
-                {
-                    using (var checkSeries = new SqlCommand(
-                        "SELECT COUNT(*) FROM txn_series WHERE series_id = @SeriesId", conn))
                     {
-                        checkSeries.Parameters.AddWithValue("@SeriesId", req.SeriesId);
-
-                        if ((int)checkSeries.ExecuteScalar() > 0)
+                        return Json(new ResponseDto
                         {
-                            return Json(new ResponseDto
+                            Code = 404,
+                            Message = "Series not found."
+                        });
+                    }
+
+                    // ==========================================
+                    // PINDAH COVER JIKA PACKAGE BERUBAH
+                    // ==========================================
+                    if (!string.IsNullOrEmpty(oldPackageId) &&
+                        oldPackageId != packageId)
+                    {
+                        string oldFolder = Path.Combine(
+                            _env.WebRootPath,
+                            "Audiobook",
+                            "image",
+                            oldPackageId
+                        );
+
+                        string newFolder = Path.Combine(
+                            _env.WebRootPath,
+                            "Audiobook",
+                            "image",
+                            packageId
+                        );
+
+                        if (!Directory.Exists(newFolder))
+                            Directory.CreateDirectory(newFolder);
+
+                        if (Directory.Exists(oldFolder))
+                        {
+                            var oldFiles = Directory.GetFiles(
+                                oldFolder,
+                                $"{req.SeriesId}.*"
+                            );
+
+                            foreach (var oldFile in oldFiles)
                             {
-                                Code = 400,
-                                Message = "Series ID already exists."
-                            });
+                                string fileName =
+                                    Path.GetFileName(oldFile);
+
+                                string newFile =
+                                    Path.Combine(
+                                        newFolder,
+                                        fileName
+                                    );
+
+                                if (System.IO.File.Exists(newFile))
+                                    System.IO.File.Delete(newFile);
+
+                                System.IO.File.Move(
+                                    oldFile,
+                                    newFile
+                                );
+                            }
                         }
                     }
 
-                    // ===== CREATE =====
-                    using var cmd = new SqlCommand(@"
-                        INSERT INTO txn_series
-                        (
-                            series_id,
-                            package_id,
-                            name,
-                            sequence,
-                            created_date,
-                            updated_date,
-                            deleted_date
-                        )
-                        VALUES
-                        (
-                            @SeriesId,
-                            @PackageId,
-                            @Name,
-                            @Sequence,
-                            GETDATE(),
-                            NULL,
-                            NULL
-                        )", conn);
+                    return Json(new ResponseDto
+                    {
+                        Code = 200,
+                        Message = "Series updated successfully."
+                    });
+                }
 
-                    cmd.Parameters.AddWithValue("@SeriesId", req.SeriesId);
-                    cmd.Parameters.AddWithValue("@PackageId", req.PackageId);
-                    cmd.Parameters.AddWithValue("@Name", req.Name);
-                    cmd.Parameters.AddWithValue("@Sequence", req.Sequence);
+                // ==========================================
+                // CREATE
+                // ==========================================
+
+                using (var checkSeries = new SqlCommand(@"
+            SELECT COUNT(*)
+            FROM txn_series
+            WHERE series_id = @SeriesId
+        ", conn))
+                {
+                    checkSeries.Parameters.AddWithValue(
+                        "@SeriesId",
+                        req.SeriesId
+                    );
+
+                    if ((int)checkSeries.ExecuteScalar() > 0)
+                    {
+                        return Json(new ResponseDto
+                        {
+                            Code = 400,
+                            Message = "Series ID already exists."
+                        });
+                    }
+                }
+
+                using (var cmd = new SqlCommand(@"
+            INSERT INTO txn_series
+            (
+                series_id,
+                package_id,
+                name,
+                cover_image,
+                sequence,
+                created_date,
+                updated_date,
+                deleted_date
+            )
+            VALUES
+            (
+                @SeriesId,
+                @PackageId,
+                @Name,
+                @CoverImage,
+                @Sequence,
+                GETDATE(),
+                NULL,
+                NULL
+            )
+        ", conn))
+                {
+                    cmd.Parameters.AddWithValue(
+                        "@SeriesId",
+                        req.SeriesId
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@PackageId",
+                        req.PackageId
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@Name",
+                        req.Name
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@CoverImage",
+                        (object)coverFileName ?? DBNull.Value
+                    );
+
+                    cmd.Parameters.AddWithValue(
+                        "@Sequence",
+                        req.Sequence
+                    );
 
                     cmd.ExecuteNonQuery();
-
-                    return Json(new ResponseDto { Code = 200, Message = "Series created successfully." });
                 }
+
+                return Json(new ResponseDto
+                {
+                    Code = 200,
+                    Message = "Series created successfully."
+                });
             }
             catch (Exception ex)
             {
-                return Json(new ResponseDto { Code = 500, Message = ex.Message });
+                return Json(new ResponseDto
+                {
+                    Code = 500,
+                    Message = ex.Message
+                });
             }
         }
 

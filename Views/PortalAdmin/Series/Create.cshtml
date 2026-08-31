@@ -41,6 +41,23 @@
                        placeholder="e.g. Season 1" />
             </div>
 
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Cover Image
+                </label>
+
+                <input type="file"
+                       id="coverFile"
+                       accept=".jpg,.jpeg,.png,.webp"
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg
+                  focus:outline-none focus:ring-2 focus:ring-blue-500
+                  dark:bg-gray-700 dark:text-white" />
+
+                <p class="text-xs text-gray-500 mt-1">
+                    JPG, JPEG, PNG, atau WEBP
+                </p>
+            </div>
+
             <div class="mb-6">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sequence</label>
                 <input type="number" id="sequence" min="1"
@@ -82,43 +99,50 @@
             }
         });
 
-        $("#seriesForm").on("submit", function (e) {
-        e.preventDefault();
+            $("#seriesForm").on("submit", function (e) {
+            e.preventDefault();
 
-        const seriesId = $("#seriesId").val().trim();
-        const packageId = $("#packageId").val();
-        const name = $("#seriesName").val().trim();
-        const sequence = $("#sequence").val();
+            const seriesId = $("#seriesId").val().trim();
+            const packageId = $("#packageId").val();
+            const name = $("#seriesName").val().trim();
+            const sequence = $("#sequence").val();
 
-        if (!seriesId || !packageId || !name || !sequence) {
-            alert("Series ID, Package, Name, and Sequence are required.");
-            return;
-        }
+            if (!seriesId || !packageId || !name || !sequence) {
+                alert("Series ID, Package, Name, and Sequence are required.");
+                return;
+            }
 
-        $("button[type=submit]").prop("disabled", true).text("Saving...");
+            $("button[type=submit]").prop("disabled", true).text("Saving...");
+
+            const formData = new FormData();
+            formData.append("IsEdit", "false");
+            formData.append("SeriesId", seriesId);
+            formData.append("PackageId", packageId);
+            formData.append("Name", name);
+            formData.append("Sequence", sequence);
+
+            const coverFile = $("#coverFile")[0].files[0];
+            if (coverFile) {
+                formData.append("CoverFile", coverFile);
+            }
 
             $.ajax({
                 url: '/admin/series/save',
                 type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({
-                    IsEdit: false,
-                    SeriesId: seriesId,
-                    PackageId: packageId,
-                    Name: name,
-                    Sequence: parseInt(sequence)
-                }),
+                data: formData,
+                processData: false,
+                contentType: false,
                 success: function (res) {
                     if (res.code === 200) {
                         window.location.href = "/admin/series/index";
                     } else {
                         alert(res.message || "Failed to save series.");
-                        $("button[type=submit").prop("disabled", false).text("Save");
+                        $("button[type=submit]").prop("disabled", false).text("Save");
                     }
                 },
                 error: function () {
                     alert("Server error. Please try again.");
-                    $("button[type=submit").prop("disabled", false).text("Save");
+                    $("button[type=submit]").prop("disabled", false).text("Save");
                 }
             });
         });

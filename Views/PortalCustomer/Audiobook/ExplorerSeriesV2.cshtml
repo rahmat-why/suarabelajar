@@ -1,0 +1,652 @@
+﻿@{
+    ViewData["Title"] = "Explorer";
+    Layout = "_LayoutCustomer";
+
+    var pkg = ViewBag.Package;
+    string pkgId = pkg != null ? (string)pkg.package_id : "";
+}
+
+<p class="text-2xl font-extrabold text-white leading-tight mt-2">
+    Platform Audio-Learning<br>
+    No. 1 di Indonesia
+</p>
+
+<p class="text-xl text-white leading-tight mt-2">
+    Terinspirasi Dari Banyak Ilmu Pengetahuan di Dunia
+</p>
+
+<div id="series-container" class="space-y-10 mt-8"></div>
+
+<div id="loading" class="text-center py-6 hidden">
+    <span class="text-gray-500 font-medium">Loading...</span>
+</div>
+
+<script>
+    let skip = 0;
+    let isLoading = false;
+    let isEnd = false;
+    let seriesCount = 0;
+
+    const PACKAGE_ID = "@Html.Raw(System.Text.Json.JsonEncodedText.Encode(pkgId ?? ""))";
+    const take = 2;
+
+    // Cycled gradient colors for the series header box (no image used)
+    const HEADER_COLORS = [
+        "bg-gradient-to-br from-orange-500 to-purple-600",
+        "bg-gradient-to-br from-blue-500 to-indigo-600",
+        "bg-gradient-to-br from-emerald-500 to-teal-600",
+        "bg-gradient-to-br from-pink-500 to-rose-600",
+    ];
+
+    // Cycled emoji per module/series (instead of a generic book icon)
+    const HEADER_EMOJIS = [
+        "🔎",
+        "📇",
+        "💰",
+        "🏅",
+        "📊",
+        "📈"
+    ];
+
+    const HEADER_ICON_ASSETS = [
+        "/images/module-icons/modul1.png",
+        "/images/module-icons/modul2.png",
+        "/images/module-icons/modul3.png",
+        "/images/module-icons/modul4.png",
+        "/images/module-icons/modul5.png",
+        "/images/module-icons/modul6.png"
+    ];
+
+
+    // ==========================================
+    // DOCUMENT READY
+    // ==========================================
+    $(document).ready(function () {
+        loadMore();
+    });
+
+
+    // ==========================================
+    // INFINITE SCROLL
+    // ==========================================
+    $(window).on("scroll", function () {
+
+        if (
+            !isLoading &&
+            !isEnd &&
+            $(window).scrollTop() + $(window).height()
+            >= $(document).height() - 150
+        ) {
+            loadMore();
+        }
+
+    });
+
+
+    // ==========================================
+    // LOAD MORE
+    // ==========================================
+    function loadMore() {
+
+        if (isLoading || isEnd) {
+            return;
+        }
+
+        isLoading = true;
+
+        $("#loading").removeClass("hidden");
+
+
+        $.ajax({
+
+            url: "/customer/explorer",
+
+            method: "POST",
+
+            contentType: "application/json",
+
+            data: JSON.stringify({
+                skip: skip,
+                take: take
+            }),
+
+            success: function (res) {
+
+                console.log("Explorer Response:", res);
+
+                if (
+                    res &&
+                    res.code === 200 &&
+                    Array.isArray(res.data)
+                ) {
+
+                    if (res.data.length === 0) {
+
+                        isEnd = true;
+
+                    } else {
+
+                        renderSeries(res.data);
+
+                        skip += take;
+
+
+                        // Auto load when page is not tall enough
+                        setTimeout(
+                            autoLoadIfNoScroll,
+                            200
+                        );
+
+                    }
+
+                }
+
+                finishLoading();
+
+            },
+
+            error: function (xhr) {
+
+                console.error(
+                    "Explorer Error:",
+                    xhr.responseText
+                );
+
+                finishLoading();
+
+            }
+
+        });
+
+    }
+
+
+    // ==========================================
+    // FINISH LOADING
+    // ==========================================
+    function finishLoading() {
+
+        isLoading = false;
+
+        $("#loading")
+            .addClass("hidden");
+
+    }
+
+
+    // ==========================================
+    // AUTO LOAD IF PAGE IS NOT SCROLLABLE
+    // ==========================================
+    function autoLoadIfNoScroll() {
+
+        if (
+            !isEnd &&
+            !isLoading &&
+            $(document).height() <= $(window).height()
+        ) {
+
+            loadMore();
+
+        }
+
+    }
+
+
+    // ==========================================
+    // CLAMP PROGRESS (defensive: keep between 0-100)
+    // ==========================================
+    function clampProgress(value) {
+
+        const n = Number(value);
+
+        if (isNaN(n)) {
+            return 0;
+        }
+
+        return Math.max(0, Math.min(100, Math.round(n)));
+
+    }
+
+
+    // ==========================================
+    // SERIES RENDER (stacked layout, no image header)
+    // ==========================================
+    function renderSeries(seriesList) {
+
+        if (!Array.isArray(seriesList)) {
+            return;
+        }
+
+
+        seriesList.forEach(function (series) {
+
+            // Original series ID
+            const seriesId =
+                series.series_id;
+
+
+            // Safe ID only for HTML element ID
+            const safeId =
+                encodeURIComponent(seriesId);
+
+
+            // Progress
+            const progress =
+                clampProgress(series.progress);
+
+
+            // Cycled gradient color (instead of a series image)
+            const headerColor =
+                HEADER_COLORS[seriesCount % HEADER_COLORS.length];
+
+            // Cycled emoji (instead of a book icon)
+            const headerEmoji =
+                HEADER_EMOJIS[seriesCount % HEADER_EMOJIS.length];
+
+            // Cycled icon asset, only used if HEADER_ICON_ASSETS is filled in
+            const headerIconAsset =
+                HEADER_ICON_ASSETS.length > 0
+                    ? HEADER_ICON_ASSETS[seriesCount % HEADER_ICON_ASSETS.length]
+                    : null;
+
+            // Build the icon markup: use the asset image if provided,
+            // fall back to emoji automatically if the image fails to load
+            const headerIconHtml = headerIconAsset
+                ? `<img src="${headerIconAsset}" alt="" class="w-20 h-20 object-contain" onerror="this.replaceWith('${headerEmoji}')">`
+                : headerEmoji;
+
+            seriesCount++;
+
+
+            // ==========================================
+            // SERIES HTML
+            // ==========================================
+            const seriesHtml = `
+
+                    <div class="space-y-4">
+
+                        <!-- SERIES HEADER (gradient box, no image) -->
+                        <div class="
+                            relative
+                            rounded-xl
+                            overflow-hidden
+                            border border-gray-700
+                            ${headerColor}
+                            h-16
+                            sm:h-20
+                            flex
+                            items-center
+                            gap-3
+                            px-5
+                        ">
+
+                            <div class="
+                                w-14
+                                h-14
+                                flex
+                                items-center
+                                justify-center
+                                flex-shrink-0
+                                text-3xl
+                            ">
+                                ${headerIconHtml}
+                            </div>
+
+                            <h2 class="
+                                text-white
+                                text-base
+                                sm:text-lg
+                                font-semibold
+                            ">
+                                ${escapeHtml(series.series_name.toUpperCase())}
+                            </h2>
+
+                        </div>
+
+
+                        <!-- PROGRESS BAR -->
+                        <div>
+                            <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                <span>Progress</span>
+                                <span>${progress}%</span>
+                            </div>
+                            <div class="w-full h-2 bg-[#1c1c1e] rounded-full overflow-hidden">
+                                <div
+                                    class="h-full bg-emerald-500"
+                                    style="width:${progress}%"
+                                ></div>
+                            </div>
+                        </div>
+
+
+                        <!-- SERIES ITEMS -->
+                        <div
+                            id="series-${safeId}"
+                            class="
+                                grid
+                                grid-cols-1
+                                sm:grid-cols-2
+                                lg:grid-cols-3
+                                gap-4
+                            "
+                        >
+                        </div>
+
+                    </div>
+
+                `;
+
+
+            // IMPORTANT:
+            // Append HTML string to container
+            $("#series-container")
+                .append(seriesHtml);
+
+
+            // ==========================================
+            // RENDER ITEMS
+            // ==========================================
+            if (
+                Array.isArray(series.items) &&
+                series.items.length > 0
+            ) {
+
+                series.items.forEach(function (item) {
+
+                    $(`#series-${safeId}`)
+                        .append(
+                            renderCard(
+                                item,
+                                seriesId
+                            )
+                        );
+
+                });
+
+            } else {
+
+                $(`#series-${safeId}`)
+                    .append(`
+
+                            <div class="
+                                text-gray-500
+                                text-sm
+                                col-span-full
+                            ">
+                                Belum ada item
+                            </div>
+
+                        `);
+
+            }
+
+        });
+
+    }
+
+
+    // ==========================================
+    // RENDER CARD
+    // ==========================================
+    function renderCard(item, seriesId = null) {
+        // ==========================================
+        // QUIZ CARD
+        // ==========================================
+        if (item.item_type === "quiz") {
+
+            return `
+            <div
+                onclick="goToQuiz('${seriesId}')"
+                class="
+                    relative
+                    w-full
+                    h-16
+                    rounded-xl
+                    overflow-hidden
+                    bg-gradient-to-r
+                    from-[#4b2b7f]
+                    via-[#3b4f82]
+                    to-[#286b6d]
+                    cursor-pointer
+                    flex
+                    items-center
+                    justify-between
+                    px-4
+                    sm:px-5
+                    transition
+                    hover:brightness-110
+                "
+            >
+
+                <!-- LEFT: QUIZ TITLE -->
+                <div
+                    class="
+                        flex
+                        items-center
+                        gap-2
+                        text-white
+                        text-sm
+                        sm:text-base
+                        font-bold
+                        whitespace-nowrap
+                    "
+                >
+
+                    <span>
+                        Start Quiz
+                    </span>
+
+                    <!-- QUIZ ICON -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        class="w-5 h-5 text-white"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75"
+                        />
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M19.5 14.25v-8.25
+                               A2.25 2.25 0 0017.25 3.75H6.75
+                               A2.25 2.25 0 004.5 6v12
+                               A2.25 2.25 0 006.75 20.25h10.5
+                               A2.25 2.25 0 0019.5 18v-1.5"
+                        />
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15.75 3.75v3h3"
+                        />
+                    </svg>
+
+                </div>
+
+
+                <!-- RIGHT: START BUTTON -->
+                <div
+                    class="
+                        h-9
+                        min-w-[92px]
+                        px-5
+                        bg-[#20d8d0]
+                        hover:bg-[#2ce8df]
+                        rounded-sm
+                        flex
+                        items-center
+                        justify-center
+                        text-[#164f50]
+                        text-xs
+                        sm:text-sm
+                        font-bold
+                        tracking-widest
+                        transition
+                    "
+                >
+                    START
+                </div>
+
+            </div>
+        `;
+
+        }
+
+        // ==========================================
+        // AUDIOBOOK CARD
+        // (series layout never shows the cover image)
+        // ==========================================
+            return `
+
+        <div
+            onclick="goToPlayer('${item.audiobook_id}')"
+            class="
+                relative
+                bg-[#151517]
+                rounded-xl
+                shadow
+                hover:shadow-lg
+                transition
+                cursor-pointer
+
+                h-16
+                w-full
+
+                flex
+                items-center
+
+                px-3
+                sm:px-4
+            "
+        >
+
+            <div class="
+                flex
+                items-center
+                w-full
+                pr-12
+            ">
+
+                <div class="
+                    text-sm
+                    sm:text-base
+                    font-semibold
+                    text-gray-100
+                    line-clamp-2
+                    leading-5
+                ">
+
+                    ${escapeHtml(item.title)}
+
+                </div>
+
+            </div>
+
+
+            <div class="
+                absolute
+                right-3
+                top-1/2
+                -translate-y-1/2
+                sm:right-4
+            ">
+
+                <div class="
+                    w-9
+                    h-9
+                    bg-[#4f1636]
+                    hover:bg-[#5d1b40]
+                    rounded-full
+                    flex
+                    items-center
+                    justify-center
+                    shadow-lg
+                ">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="white"
+                        class="
+                            w-4
+                            h-4
+                            ml-0.5
+                        "
+                    >
+
+                        <path d="M8 5v14l11-7z" />
+
+                    </svg>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+    }
+
+
+    // ==========================================
+    // GO TO AUDIOBOOK PLAYER
+    // ==========================================
+    function goToPlayer(id) {
+
+        window.location.href =
+            "/Audiobook/Player?audiobook_id=" +
+            encodeURIComponent(id);
+
+    }
+
+
+    // ==========================================
+    // GO TO QUIZ
+    // ==========================================
+    function goToQuiz(seriesId) {
+
+        if (!seriesId) {
+
+            console.error(
+                "Series ID is missing."
+            );
+
+            return;
+
+        }
+
+        window.location.href =
+            "/AssessmentPreview?series_id=" +
+            encodeURIComponent(seriesId);
+
+    }
+
+
+    // ==========================================
+    // ESCAPE HTML
+    // Prevent HTML injection from API data
+    // ==========================================
+    function escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+</script>

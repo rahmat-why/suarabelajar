@@ -1,246 +1,518 @@
 ﻿@{
     ViewData["Title"] = "Assessment";
     Layout = "_LayoutCustomer";
-
-    var audiobookId = Context.Request.Query["audiobook_id"];
 }
 
-<!-- ===================== TAB ===================== -->
-<div class="border-b border-gray-700 mb-6">
-    <div class="flex gap-8">
-        <a href="/Audiobook/Player?audiobook_id=@audiobookId"
-            class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white hover:border-gray-500 transition">
-            Listen
-        </a>
+<div id="quiz-header" class="mt-2 space-y-1"></div>
 
-        <a href="/customer/reading?audiobook_id=@audiobookId"
-           class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white hover:border-gray-500 transition">
-            Read
-        </a>
+<div id="quiz-notes" class="hidden mt-4 p-4 rounded-xl bg-[#151517] border border-gray-700 text-sm text-gray-300"></div>
 
-        <a href="/customer/assessment?audiobook_id=@audiobookId"
-           class="pb-3 border-b-2 border-white text-white font-semibold">
-            Assessment
-        </a>
-    </div>
-</div>
+<div id="quiz-list" class="space-y-6 mt-6"></div>
 
-<!-- ===================== HEADER ===================== -->
-<div id="assessment-header"
-     class="bg-[#151517] rounded-2xl shadow-xl p-6 mb-6 text-white">
-
-    <h2 class="text-2xl font-bold mb-2">
-        Assessment Quiz
-    </h2>
-
-    <p class="text-gray-400">
-        Kerjakan quiz berikut untuk menguji pemahamanmu terhadap audiobook yang telah didengarkan.
-    </p>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-
-        <div class="bg-[#1d1d20] rounded-xl p-4">
-            <p class="text-gray-400 text-sm">
-                Total Question
-            </p>
-
-            <h3 id="totalQuestion"
-                class="text-2xl font-bold mt-2">
-                -
-            </h3>
-        </div>
-
-        <div class="bg-[#1d1d20] rounded-xl p-4">
-            <p class="text-gray-400 text-sm">
-                Total Point
-            </p>
-
-            <h3 id="totalPoint"
-                class="text-2xl font-bold mt-2">
-                -
-            </h3>
-        </div>
-
-        <div class="bg-[#1d1d20] rounded-xl p-4">
-            <p class="text-gray-400 text-sm">
-                Minimum Point
-            </p>
-
-            <h3 id="minimumPoint"
-                class="text-2xl font-bold mt-2">
-                -
-            </h3>
-        </div>
-
-    </div>
-</div>
-
-<!-- ===================== QUESTION ===================== -->
-<div id="questionContainer"
-     class="space-y-6">
-
-    <!-- Dynamic Question Here -->
-
-</div>
-
-<!-- ===================== ACTION ===================== -->
-<div class="mt-8 flex justify-between">
-
-    <a href="/Audiobook/Player?audiobook_id=@audiobookId"
-       class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-6 rounded-lg transition">
-        ← Back to Play Audiobook
-    </a>
-
-    <button id="btnSubmit"
+<div id="quiz-actions" class="mt-8 hidden">
+    <button id="btn-submit"
+            onclick="submitAssessment()"
             class="bg-[#4f1636] hover:bg-[#5d1b40]
-                   text-white font-semibold
-                   py-2 px-8 rounded-lg transition">
-
-        Submit Assessment
-
+       text-white font-semibold
+       py-2 px-8 rounded-lg transition">
+        Submit
     </button>
-
 </div>
+
+<div id="quiz-result" class="hidden mt-8 space-y-6"></div>
+
+<div id="loading" class="text-center py-6">
+    <span class="text-gray-500 font-medium">Loading...</span>
+</div>
+
+<div id="error-box" class="hidden text-center py-10 text-gray-400"></div>
 
 <script>
-    const AUDIOBOOK_ID = "@audiobookId";
-    let ASSESSMENT_ID = null;
-    let ALREADY_SUBMITTED = false;
+    // ==========================================
+    // STATE
+    // ==========================================
+    const params = new URLSearchParams(window.location.search);
+    const seriesId = params.get("series_id");
 
+    let quizData = null;
+
+    // questionId (OLD quiz_question_id) -> Set of selected OLD option ids
+    const selectedAnswers = {};
+
+
+    // ==========================================
+    // DOCUMENT READY
+    // ==========================================
     $(document).ready(function () {
+
+        if (!seriesId) {
+            showError("Series ID tidak ditemukan.");
+            return;
+        }
+
         loadAssessment();
+
     });
 
-        function loadAssessment() {
-            $.ajax({
-                url: '/customer/assessment/get',
-                type: 'GET',
-                data: { audiobookId: AUDIOBOOK_ID },
-                success: function (res) {
-                    if (res.code !== 200) {
-                        $("#questionContainer").html(`<p class="text-red-400">${res.message}</p>`);
-                        $("#btnSubmit").prop("disabled", true).addClass("opacity-50 cursor-not-allowed");
-                        return;
-                    }
 
-                    const data = res.data;
-                    ASSESSMENT_ID = data.assessment_id;
+    // ==========================================
+    // LOAD ASSESSMENT
+    // ==========================================
+    function loadAssessment() {
 
-                    // Kunci cuma kalau UDAH LULUS. Belum lulus tetap bisa isi ulang.
-                    const isLocked = data.already_submitted && data.is_pass === true;
-                    ALREADY_SUBMITTED = isLocked;
-
-                    $("#totalQuestion").text(data.total_question);
-                    $("#totalPoint").text(data.total_point);
-                    $("#minimumPoint").text(data.minimum_point);
-
-                    renderQuestions(data.questions);
-
-                    if (data.already_submitted) {
-                        showResult(data.score, data.minimum_point, data.is_pass, isLocked);
-                    }
-                },
-                error: function () {
-                    $("#questionContainer").html(`<p class="text-red-400">Gagal memuat assessment.</p>`);
-                }
-            });
-        }
-
-    function renderQuestions(questions) {
-        const $container = $("#questionContainer");
-        $container.empty();
-
-        questions.forEach((q, idx) => {
-            const inputType = q.question_type === "multiple_choice" ? "checkbox" : "radio";
-            const inputName = `question_${q.assessment_question_id}`;
-
-            let optionsHtml = "";
-            q.options.forEach(opt => {
-                const checked = opt.is_selected ? "checked" : "";
-                optionsHtml += `
-                    <label class="flex items-center gap-3 bg-[#1d1d20] hover:bg-[#232326] rounded-lg p-3 cursor-pointer transition">
-                        <input type="${inputType}" name="${inputName}"
-                               class="answer-input accent-[#4f1636]"
-                               data-question-id="${q.assessment_question_id}"
-                               value="${opt.assessment_option_id}" ${checked}
-                               ${ALREADY_SUBMITTED ? "disabled" : ""} />
-                        <span class="text-gray-200">${opt.option_text}</span>
-                    </label>`;
-            });
-
-            $container.append(`
-                <div class="bg-[#151517] rounded-2xl shadow-xl p-6 text-white">
-                    <p class="font-semibold mb-4">${idx + 1}. ${q.question}
-                        <span class="text-gray-400 text-sm font-normal">(${q.point} poin)</span>
-                    </p>
-                    <div class="space-y-2">${optionsHtml}</div>
-                </div>`);
-        });
-    }
-
-        function showResult(score, minimumPoint, isPass, isLocked) {
-            const color = isPass ? "text-green-400" : "text-red-400";
-            const label = isPass ? "LULUS" : "BELUM LULUS";
-            $(".assessment-result-banner").remove(); // biar gak numpuk pas retry
-            $("#assessment-header").append(`
-                <div class="assessment-result-banner mt-6 p-4 rounded-xl bg-[#1d1d20] ${color} font-bold">
-                    Hasil terakhir kamu: ${score} poin — ${label}
-                    ${!isLocked ? '<span class="block text-sm font-normal text-gray-400 mt-1">Kamu masih bisa coba lagi.</span>' : ''}
-                </div>`);
-
-            if (isLocked) {
-                $("#btnSubmit").hide();
-            } else {
-                $("#btnSubmit").show().prop("disabled", false).text("Submit Ulang");
-            }
-        }
-
-    $(document).on("click", "#btnSubmit", function () {
-        if (ALREADY_SUBMITTED || !ASSESSMENT_ID) return;
-
-        const answersMap = {};
-        $(".answer-input:checked").each(function () {
-            const qId = $(this).data("question-id");
-            if (!answersMap[qId]) answersMap[qId] = [];
-            answersMap[qId].push($(this).val());
-        });
-
-        const uniqueQuestions = [...new Set(
-            $(".answer-input").map(function () { return $(this).data("question-id"); }).get()
-        )];
-
-        if (Object.keys(answersMap).length < uniqueQuestions.length) {
-            if (!confirm("Masih ada soal yang belum kamu jawab. Tetap submit?")) return;
-        }
-
-        const answers = Object.keys(answersMap).map(qId => ({
-            AssessmentQuestionId: qId,
-            SelectedOptionIds: answersMap[qId]
-        }));
-
-        $("#btnSubmit").prop("disabled", true).text("Submitting...");
+        $("#loading").removeClass("hidden");
 
         $.ajax({
-            url: '/customer/assessment/submit',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ AssessmentId: ASSESSMENT_ID, Answers: answers }),
+
+            url: "/customer/assessment/get",
+
+            method: "GET",
+
+            data: { seriesId: seriesId },
+
             success: function (res) {
-                if (res.code === 200) {
-                    const isLocked = res.data.is_pass === true;
-                    ALREADY_SUBMITTED = isLocked;
-                    $(".answer-input").prop("disabled", isLocked); // input cuma dikunci kalau udah lulus
-                    showResult(res.data.total_point, res.data.minimum_point, res.data.is_pass, isLocked);
-                    $("#btnSubmit").prop("disabled", false).text("Submit Ulang");
+
+                $("#loading").addClass("hidden");
+
+                if (res && res.code === 200 && res.data) {
+
+                    quizData = res.data;
+
+                    renderQuiz(quizData);
+
                 } else {
-                    alert(res.message || "Gagal submit assessment.");
-                    $("#btnSubmit").prop("disabled", false).text(ASSESSMENT_ID && ALREADY_SUBMITTED === false ? "Submit Ulang" : "Submit Assessment");
+
+                    showError(res && res.message ? res.message : "Gagal memuat quiz.");
+
                 }
+
             },
-            error: function () {
-                alert("Server error. Silakan coba lagi.");
-                $("#btnSubmit").prop("disabled", false).text("Submit Assessment");
+
+            error: function (xhr) {
+
+                $("#loading").addClass("hidden");
+
+                console.error("GetAssessment Error:", xhr.responseText);
+
+                showError("Terjadi kesalahan saat memuat quiz.");
+
             }
+
         });
-    });
+
+    }
+
+
+    // ==========================================
+    // RENDER QUIZ
+    // ==========================================
+    function renderQuiz(data) {
+
+        // HEADER
+        $("#quiz-header").html(`
+                <p class="text-2xl font-extrabold text-white leading-tight">
+                    ${escapeHtml(data.quiz_title || "Quiz")}
+                </p>
+                <p class="text-sm text-gray-400">
+                    ${data.total_question} questions &middot; Minimum score ${data.minimum_point}
+                </p>
+            `);
+
+        // QUESTIONS
+        const $list = $("#quiz-list");
+
+        $list.empty();
+
+        if (!Array.isArray(data.questions) || data.questions.length === 0) {
+
+            $list.html(`
+                    <div class="text-gray-500 text-sm">
+                        Belum ada pertanyaan untuk quiz ini.
+                    </div>
+                `);
+
+            return;
+
+        }
+
+        data.questions.forEach(function (question, index) {
+
+            selectedAnswers[question.quiz_question_id] = new Set();
+
+            $list.append(renderQuestionCard(question, index));
+
+        });
+
+        $("#quiz-actions").removeClass("hidden");
+
+    }
+
+
+    // ==========================================
+    // RENDER QUESTION CARD
+    // ==========================================
+    function renderQuestionCard(question, index) {
+
+        const isMultiple =
+            (question.question_type || "").toLowerCase() === "multiple";
+
+        const optionsHtml = (question.options || []).map(function (opt) {
+
+            return `
+                    <label
+                        data-question-id="${question.quiz_question_id}"
+                        data-option-id="${opt.quiz_option_id}"
+                        class="
+                            option-label
+                            flex
+                            items-center
+                            gap-3
+                            p-3
+                            rounded-lg
+                            border
+                            border-gray-700
+                            bg-[#1c1c1e]
+                            hover:border-gray-500
+                            cursor-pointer
+                            transition
+                        "
+                    >
+                        <input
+                            type="${isMultiple ? "checkbox" : "radio"}"
+                            name="q-${question.quiz_question_id}"
+                            value="${opt.quiz_option_id}"
+                            onchange="onOptionChange('${question.quiz_question_id}', '${opt.quiz_option_id}', ${isMultiple}, this.checked)"
+                            class="w-4 h-4"
+                        >
+                        <span class="text-sm sm:text-base text-gray-100">
+                            ${escapeHtml(opt.option_text)}
+                        </span>
+                    </label>
+                `;
+
+        }).join("");
+
+        return `
+                <div class="p-4 sm:p-5 rounded-xl bg-[#151517] border border-gray-700 space-y-3">
+
+                    <div class="text-sm sm:text-base font-semibold text-white">
+                        ${index + 1}. ${escapeHtml(question.question)}
+                        ${isMultiple ? '<span class="text-xs text-gray-400 font-normal">(boleh pilih lebih dari satu)</span>' : ""}
+                    </div>
+
+                    <div class="space-y-2">
+                        ${optionsHtml}
+                    </div>
+
+                </div>
+            `;
+
+    }
+
+
+    // ==========================================
+    // OPTION CHANGE
+    // ==========================================
+    function onOptionChange(questionId, optionId, isMultiple, checked) {
+
+        if (!selectedAnswers[questionId]) {
+            selectedAnswers[questionId] = new Set();
+        }
+
+        if (isMultiple) {
+
+            if (checked) {
+                selectedAnswers[questionId].add(optionId);
+            } else {
+                selectedAnswers[questionId].delete(optionId);
+            }
+
+        } else {
+
+            // Single choice: only one option selected at a time
+            selectedAnswers[questionId] = new Set(checked ? [optionId] : []);
+
+        }
+
+    }
+
+
+    // ==========================================
+    // SUBMIT ASSESSMENT
+    // ==========================================
+    function submitAssessment() {
+
+        if (!quizData) {
+            return;
+        }
+
+        const answers = Object.keys(selectedAnswers).map(function (questionId) {
+
+            return {
+                AssessmentQuestionId: questionId,
+                SelectedOptionIds: Array.from(selectedAnswers[questionId])
+            };
+
+        });
+
+        const unanswered = answers.filter(a => a.SelectedOptionIds.length === 0).length;
+
+        if (unanswered > 0) {
+
+            if (!confirm(`Masih ada ${unanswered} pertanyaan belum dijawab. Tetap kirim jawaban?`)) {
+                return;
+            }
+
+        }
+
+        $("#btn-submit").prop("disabled", true).addClass("opacity-50");
+
+        $.ajax({
+
+            url: "/customer/assessment/submit",
+
+            method: "POST",
+
+            contentType: "application/json",
+
+            data: JSON.stringify({
+                QuizId: quizData.quiz_id,
+                Answers: answers
+            }),
+
+            success: function (res) {
+
+                console.log("Submit Response:", res);
+
+                if (res && res.code === 200 && res.data) {
+
+                    renderResult(res.data);
+
+                } else {
+
+                    alert(res && res.message ? res.message : "Gagal mengirim jawaban.");
+
+                    $("#btn-submit").prop("disabled", false).removeClass("opacity-50");
+
+                }
+
+            },
+
+            error: function (xhr) {
+
+                console.error("Submit Error:", xhr.responseText);
+
+                alert("Terjadi kesalahan saat mengirim jawaban.");
+
+                $("#btn-submit").prop("disabled", false).removeClass("opacity-50");
+
+            }
+
+        });
+
+    }
+
+
+    // ==========================================
+    // RENDER RESULT
+    // ==========================================
+    function renderResult(data) {
+
+        // Hide quiz form, show result
+        $("#quiz-list").addClass("hidden");
+        $("#quiz-actions").addClass("hidden");
+        $("#quiz-notes").addClass("hidden");
+
+        const $result = $("#quiz-result");
+
+        $result.removeClass("hidden").empty();
+
+        // SUMMARY
+        $result.append(`
+                <div class="
+                    p-5
+                    rounded-xl
+                    border
+                    ${data.is_pass ? "border-[#20d8d0] bg-[#0f2b29]" : "border-red-500 bg-[#2b0f13]"}
+                ">
+                    <p class="text-xl font-extrabold ${data.is_pass ? "text-[#20d8d0]" : "text-red-400"}">
+                        ${data.is_pass ? "Selamat, kamu lulus!" : "Maaf, kamu belum lulus."}
+                    </p>
+                    <p class="text-sm text-gray-300 mt-1">
+                        Skor kamu: <span class="font-semibold text-white">${data.total_point}</span>
+                        / Minimum: <span class="font-semibold text-white">${data.minimum_point}</span>
+                    </p>
+                </div>
+            `);
+
+        // SCORE-BASED NOTES
+        // Score < 70 -> notes1, otherwise -> notes2
+        const scoreNote = data.total_point < 70 ? data.notes1 : data.notes2;
+
+        if (scoreNote) {
+
+            $result.append(`
+                    <div class="p-4 rounded-xl bg-[#151517] border border-gray-700 text-sm text-gray-300">
+                        ${escapeHtml(scoreNote)}
+                    </div>
+                `);
+
+        }
+
+        // PER-QUESTION BREAKDOWN
+        if (Array.isArray(data.questions)) {
+
+            data.questions.forEach(function (question, index) {
+
+                $result.append(renderResultQuestionCard(question, index));
+
+            });
+
+        }
+
+        // BACK TO EXPLORER
+        $result.append(`
+                <div class="pt-2">
+                    <button
+                        onclick="window.location.href='/Audiobook/Explorer'"
+                        class="
+                            w-full
+                            sm:w-auto
+                            px-8
+                            py-3
+                            bg-[#4f1636]
+                            hover:bg-[#5d1b40]
+                            text-white
+                            font-bold
+                            tracking-widest
+                            rounded-lg
+                            transition
+                        "
+                    >
+                        BACK TO EXPLORER
+                    </button>
+                </div>
+            `);
+
+    }
+
+
+    // ==========================================
+    // RENDER RESULT QUESTION CARD
+    // ==========================================
+    function renderResultQuestionCard(question, index) {
+
+        const options = question.options || [];
+
+        const optionsHtml = options.map(function (opt) {
+
+            let stateClass = "border-gray-700 bg-[#1c1c1e]";
+            let badge = "";
+
+            if (opt.is_correct && opt.is_selected) {
+
+                // Correct and picked
+                stateClass = "border-[#20d8d0] bg-[#0f2b29]";
+                badge = `<span class="text-xs font-semibold text-[#20d8d0]">Jawaban benar &middot; dipilih</span>`;
+
+            } else if (opt.is_correct && !opt.is_selected) {
+
+                // Correct but not picked
+                stateClass = "border-[#20d8d0] bg-[#0f2b29]";
+                badge = `<span class="text-xs font-semibold text-[#20d8d0]">Jawaban benar</span>`;
+
+            } else if (!opt.is_correct && opt.is_selected) {
+
+                // Picked but wrong
+                stateClass = "border-red-500 bg-[#2b0f13]";
+                badge = `<span class="text-xs font-semibold text-red-400">Dipilih &middot; salah</span>`;
+
+            }
+
+            return `
+                    <div class="flex items-center justify-between gap-3 p-3 rounded-lg border ${stateClass}">
+                        <span class="text-sm sm:text-base text-gray-100">
+                            ${escapeHtml(opt.option_text)}
+                        </span>
+                        ${badge}
+                    </div>
+                `;
+
+        }).join("");
+
+        const questionWasCorrect =
+            options.length > 0 &&
+            options.every(o => (o.is_correct && o.is_selected) || (!o.is_correct && !o.is_selected));
+
+        return `
+                <div class="p-4 sm:p-5 rounded-xl bg-[#151517] border border-gray-700 space-y-3">
+
+                    <div class="flex items-start justify-between gap-3">
+
+                        <div class="text-sm sm:text-base font-semibold text-white">
+                            ${index + 1}. ${escapeHtml(question.question)}
+                        </div>
+
+                        <div class="
+                            shrink-0
+                            text-xs
+                            font-bold
+                            px-2
+                            py-1
+                            rounded
+                            ${questionWasCorrect ? "bg-[#0f2b29] text-[#20d8d0]" : "bg-[#2b0f13] text-red-400"}
+                        ">
+                            ${questionWasCorrect ? "BENAR" : "SALAH"}
+                        </div>
+
+                    </div>
+
+                    <div class="space-y-2">
+                        ${optionsHtml}
+                    </div>
+
+                    ${question.reason_correct ? `
+                        <div class="mt-2 p-3 rounded-lg bg-[#1c1c1e] border border-gray-700">
+                            <p class="text-xs font-semibold text-gray-400 mb-1">Pembahasan</p>
+                            <p class="text-sm text-gray-200">${escapeHtml(question.reason_correct)}</p>
+                        </div>
+                    ` : ""}
+
+                </div>
+            `;
+
+    }
+
+
+    // ==========================================
+    // SHOW ERROR
+    // ==========================================
+    function showError(message) {
+
+        $("#error-box")
+            .removeClass("hidden")
+            .text(message);
+
+    }
+
+
+    // ==========================================
+    // ESCAPE HTML
+    // Prevent HTML injection from API data
+    // ==========================================
+    function escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
 </script>

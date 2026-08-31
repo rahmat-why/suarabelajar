@@ -110,7 +110,8 @@ namespace suara_belajar.Controllers.PortalAdmin
                 deleted_date,
                 created_date,
                 updated_date,
-                CASE WHEN deleted_date IS NULL THEN 'Active' ELSE 'Deleted' END AS Status
+                CASE WHEN deleted_date IS NULL THEN 'Active' ELSE 'Deleted' END AS Status,
+                explorer_styling_version
             FROM mst_package
             {whereClause}
             ORDER BY package_id ASC
@@ -134,7 +135,8 @@ namespace suara_belajar.Controllers.PortalAdmin
                             deleted_date = reader["deleted_date"] == DBNull.Value ? null : (DateTime?)reader["deleted_date"],
                             created_date = reader["created_date"] == DBNull.Value ? null : (DateTime?)reader["created_date"],
                             updated_date = reader["updated_date"] == DBNull.Value ? null : (DateTime?)reader["updated_date"],
-                            status = reader["Status"].ToString()
+                            status = reader["Status"].ToString(),
+                            explorer_styling_version = reader["explorer_styling_version"].ToString(),
                         });
                     }
                 }
@@ -179,7 +181,7 @@ namespace suara_belajar.Controllers.PortalAdmin
                 conn.Open();
 
                 using var cmd = new SqlCommand(
-                    "SELECT package_id, name, logo_image, is_series FROM mst_package WHERE package_id = @PackageId", conn);
+                    "SELECT package_id, name, logo_image, is_series, explorer_styling_version FROM mst_package WHERE package_id = @PackageId", conn);
                 cmd.Parameters.AddWithValue("@PackageId", id);
 
                 using var reader = cmd.ExecuteReader();
@@ -190,7 +192,8 @@ namespace suara_belajar.Controllers.PortalAdmin
                         package_id = reader["package_id"].ToString(),
                         name = reader["name"]?.ToString(),
                         logo_image = reader["logo_image"]?.ToString(),
-                        is_series = reader["is_series"] != DBNull.Value && Convert.ToBoolean(reader["is_series"])
+                        is_series = reader["is_series"] != DBNull.Value && Convert.ToBoolean(reader["is_series"]),
+                        explorer_styling_version = reader["explorer_styling_version"]?.ToString()
                     };
 
                     return Json(new ResponseDto { Code = 200, Message = "Success", Data = data });
@@ -255,16 +258,17 @@ namespace suara_belajar.Controllers.PortalAdmin
                     // ===== UPDATE =====
                     string sql = logoFileName != null
                         ? @"UPDATE mst_package
-                            SET name = @Name, is_series = @IsSeries, logo_image = @LogoImage, updated_date = GETDATE()
+                            SET name = @Name, is_series = @IsSeries, logo_image = @LogoImage, updated_date = GETDATE(), explorer_styling_version = @ExplorerStylingVersion
                             WHERE package_id = @PackageId"
                         : @"UPDATE mst_package
-                            SET name = @Name, is_series = @IsSeries, updated_date = GETDATE()
+                            SET name = @Name, is_series = @IsSeries, updated_date = GETDATE(), explorer_styling_version = @ExplorerStylingVersion
                             WHERE package_id = @PackageId";
 
                     using var cmd = new SqlCommand(sql, conn);
                     cmd.Parameters.AddWithValue("@Name", req.Name);
                     cmd.Parameters.AddWithValue("@IsSeries", req.IsSeries);
                     cmd.Parameters.AddWithValue("@PackageId", req.PackageId);
+                    cmd.Parameters.AddWithValue("@ExplorerStylingVersion", (object)req.ExplorerStylingVersion ?? DBNull.Value);
                     if (logoFileName != null)
                         cmd.Parameters.AddWithValue("@LogoImage", logoFileName);
 
@@ -288,13 +292,14 @@ namespace suara_belajar.Controllers.PortalAdmin
                     }
 
                     using var cmd = new SqlCommand(@"
-                        INSERT INTO mst_package (package_id, name, logo_image, is_series, deleted_date, created_date, updated_date)
-                        VALUES (@PackageId, @Name, @LogoImage, @IsSeries, NULL, GETDATE(), NULL)", conn);
+                        INSERT INTO mst_package (package_id, name, logo_image, is_series, explorer_styling_version, deleted_date, created_date, updated_date)
+                        VALUES (@PackageId, @Name, @LogoImage, @IsSeries, @ExplorerStylingVersion, NULL, GETDATE(), NULL)", conn);
 
                     cmd.Parameters.AddWithValue("@PackageId", req.PackageId);
                     cmd.Parameters.AddWithValue("@Name", req.Name);
                     cmd.Parameters.AddWithValue("@LogoImage", (object)logoFileName ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@IsSeries", req.IsSeries);
+                    cmd.Parameters.AddWithValue("@ExplorerStylingVersion", (object)req.ExplorerStylingVersion ?? DBNull.Value);
 
                     cmd.ExecuteNonQuery();
 

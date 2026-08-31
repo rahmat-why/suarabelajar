@@ -2,171 +2,593 @@
     ViewData["Title"] = "Master Quiz";
     Layout = "_LayoutAdmin";
 }
+
 <div class="p-6 max-w-7xl mx-auto">
     <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
 
+        <!-- ===============================
+             HEADER
+        =============================== -->
         <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Master Quiz</h2>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                Master Quiz
+            </h2>
+
             <a href="/admin/quiz/create"
                class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+
+                <svg class="w-5 h-5"
+                     fill="none"
+                     stroke="currentColor"
+                     viewBox="0 0 24 24">
+
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 4v16m8-8H4" />
                 </svg>
+
                 Add Quiz
             </a>
         </div>
 
-        <!-- Filters -->
+
+        <!-- ===============================
+             FILTERS
+        =============================== -->
         <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <input type="text" id="tableSearch" placeholder="Search by quiz title..."
+
+            <input type="text"
+                   id="tableSearch"
+                   placeholder="Search by quiz title..."
                    class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white w-full sm:w-64">
 
-            <select id="audiobookFilter"
+            <select id="seriesFilter"
                     class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white w-full sm:w-auto">
-                <option value="">All Audiobooks</option>
+
+                <option value="">
+                    All Series
+                </option>
+
             </select>
+
         </div>
 
-        <!-- Table -->
-        <table id="quizTable" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+
+        <!-- ===============================
+             TABLE
+        =============================== -->
+        <table id="quizTable"
+               class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+
             <thead class="bg-gray-50 dark:bg-gray-700">
+
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Title</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Audiobook</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Min. Point</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Questions</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Actions</th>
+
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">
+                        Title
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">
+                        Series
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">
+                        Notes 1
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">
+                        Notes 2
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">
+                        Min. Point
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">
+                        Questions
+                    </th>
+
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">
+                        Actions
+                    </th>
+
                 </tr>
+
             </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            </tbody>
+
         </table>
 
-        <!-- Pagination -->
+
+        <!-- ===============================
+             PAGINATION
+        =============================== -->
         <div class="mt-4 flex justify-between items-center text-gray-700 dark:text-gray-200">
-            <button id="prevPage" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50">Previous</button>
-            <span id="pageInfo">Page 1 of 1</span>
-            <button id="nextPage" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50">Next</button>
+
+            <button id="prevPage"
+                    class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50">
+
+                Previous
+
+            </button>
+
+            <span id="pageInfo">
+                Page 1 of 1
+            </span>
+
+            <button id="nextPage"
+                    class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50">
+
+                Next
+
+            </button>
+
         </div>
+
     </div>
 </div>
 
+
 <script>
+
     $(document).ready(function () {
+
         let currentPage = 1;
+
         const pageSize = 10;
+
         let totalPages = 1;
 
+
+        // ===============================
+        // LOAD SERIES DROPDOWN
+        // ===============================
         $.ajax({
-            url: '/admin/quiz/list-audiobook',
+
+            url: '/admin/quiz/list-series',
+
             type: 'GET',
+
             success: function (res) {
-                if (res.code === 200 && Array.isArray(res.data)) {
-                    res.data.forEach(a => {
-                        $("#audiobookFilter").append(`<option value="${a.audiobook_id}">${a.title}</option>`);
+
+                if (
+                    res.code === 200 &&
+                    Array.isArray(res.data)
+                ) {
+
+                    res.data.forEach(s => {
+
+                        $("#seriesFilter").append(`
+                                <option value="${s.series_id}">
+                                    ${s.title}
+                                </option>
+                            `);
+
                     });
+
                 }
+
+            },
+
+            error: function () {
+
+                alert("Failed to load series.");
+
             }
+
         });
 
+
+        // ===============================
+        // GET CURRENT FILTERS
+        // ===============================
         function currentFilters() {
-            return [$("#tableSearch").val(), $("#audiobookFilter").val()];
+
+            return [
+
+                $("#tableSearch").val(),
+
+                $("#seriesFilter").val()
+
+            ];
+
         }
 
-        function loadTable(search = "", audiobookId = "") {
+
+        // ===============================
+        // LOAD TABLE
+        // ===============================
+        function loadTable(
+            search = "",
+            seriesId = ""
+        ) {
+
             $.ajax({
+
                 url: '/admin/quiz/load',
+
                 type: 'POST',
+
                 contentType: 'application/json',
+
                 data: JSON.stringify({
+
                     Draw: 0,
-                    Skip: (currentPage - 1) * pageSize,
-                    Take: pageSize,
-                    Data: search,
-                    Audiobook: audiobookId
+
+                    Skip:
+                        (currentPage - 1)
+                        * pageSize,
+
+                    Take:
+                        pageSize,
+
+                    Data:
+                        search,
+
+                    Series:
+                        seriesId
+
                 }),
+
+
                 success: function (res) {
-                    const tbody = $("#quizTable tbody");
+
+                    const tbody =
+                        $("#quizTable tbody");
+
                     tbody.empty();
 
-                    if (!res.data || res.data.length === 0) {
-                        tbody.append(`<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-300">No records found.</td></tr>`);
-                        totalPages = 1;
-                    } else {
-                        res.data.forEach(row => {
-                            tbody.append(`
-                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                                    <td class="px-6 py-4 text-gray-800 dark:text-gray-100 font-medium">${row.title || '-'}</td>
-                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300 text-sm">${row.audiobook_title || row.audiobook_id || '-'}</td>
-                                    <td class="px-6 py-4 text-gray-800 dark:text-gray-100">${row.minimum_point}</td>
-                                    <td class="px-6 py-4 text-gray-800 dark:text-gray-100">${row.question_count}</td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center gap-2">
-                                            <a href="/admin/quiz/edit/${row.quiz_id}"
-                                               class="inline-flex items-center px-3 py-1.5 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg shadow transition">
-                                                Edit
-                                            </a>
-                                            <button onclick="deleteQuiz('${row.quiz_id}')"
-                                                    class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow transition">
-                                                Delete
-                                            </button>
-                                        </div>
+
+                    // ===============================
+                    // NO DATA
+                    // ===============================
+                    if (
+                        !res.data ||
+                        res.data.length === 0
+                    ) {
+
+                        tbody.append(`
+
+                                <tr>
+
+                                    <td colspan="7"
+                                        class="px-6 py-4 text-center text-gray-500 dark:text-gray-300">
+
+                                        No records found.
+
                                     </td>
+
                                 </tr>
+
                             `);
+
+                        totalPages = 1;
+
+                    }
+
+
+                    // ===============================
+                    // DATA FOUND
+                    // ===============================
+                    else {
+
+                        res.data.forEach(row => {
+
+                            tbody.append(`
+
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+
+
+                                        <!-- ===============================
+                                             QUIZ TITLE
+                                        =============================== -->
+                                        <td class="px-6 py-4 text-gray-800 dark:text-gray-100 font-medium">
+
+                                            ${row.title || '-'}
+
+                                        </td>
+
+
+                                        <!-- ===============================
+                                             SERIES
+                                        =============================== -->
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300 text-sm">
+
+                                            ${row.series_title ||
+                                row.series_id ||
+                                '-'}
+
+                                        </td>
+
+
+                                        <!-- ===============================
+                                             NOTES 1
+                                        =============================== -->
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300 text-sm">
+
+                                            ${row.notes1 || '-'}
+
+                                        </td>
+
+
+                                        <!-- ===============================
+                                             NOTES 2
+                                        =============================== -->
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300 text-sm">
+
+                                            ${row.notes2 || '-'}
+
+                                        </td>
+
+
+                                        <!-- ===============================
+                                             MINIMUM POINT
+                                        =============================== -->
+                                        <td class="px-6 py-4 text-gray-800 dark:text-gray-100">
+
+                                            ${row.minimum_point}
+
+                                        </td>
+
+
+                                        <!-- ===============================
+                                             QUESTION COUNT
+                                        =============================== -->
+                                        <td class="px-6 py-4 text-gray-800 dark:text-gray-100">
+
+                                            ${row.question_count}
+
+                                        </td>
+
+
+                                        <!-- ===============================
+                                             ACTIONS
+                                        =============================== -->
+                                        <td class="px-6 py-4">
+
+                                            <div class="flex items-center gap-2">
+
+
+                                                <!-- EDIT -->
+                                                <a href="/admin/quiz/edit/${row.quiz_id}"
+                                                   class="inline-flex items-center px-3 py-1.5 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg shadow transition">
+
+                                                    Edit
+
+                                                </a>
+
+
+                                                <!-- DELETE -->
+                                                <button onclick="deleteQuiz('${row.quiz_id}')"
+                                                        class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow transition">
+
+                                                    Delete
+
+                                                </button>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                `);
+
                         });
 
-                        totalPages = Math.ceil(res.recordsFiltered / pageSize);
+
+                        // ===============================
+                        // CALCULATE TOTAL PAGES
+                        // ===============================
+                        totalPages = Math.ceil(
+                            res.recordsFiltered /
+                            pageSize
+                        );
+
+                        if (totalPages < 1) {
+
+                            totalPages = 1;
+
+                        }
+
                     }
 
-                    $("#pageInfo").text(`Page ${currentPage} of ${totalPages}`);
-                    $("#prevPage").prop("disabled", currentPage === 1);
-                    $("#nextPage").prop("disabled", currentPage === totalPages);
+
+                    // ===============================
+                    // UPDATE PAGINATION
+                    // ===============================
+                    $("#pageInfo").text(
+                        `Page ${currentPage} of ${totalPages}`
+                    );
+
+
+                    $("#prevPage").prop(
+                        "disabled",
+                        currentPage === 1
+                    );
+
+
+                    $("#nextPage").prop(
+                        "disabled",
+                        currentPage === totalPages
+                    );
+
                 },
+
+
                 error: function () {
-                    alert("Failed to load data.");
+
+                    alert(
+                        "Failed to load data."
+                    );
+
                 }
+
             });
+
         }
 
+
+        // ===============================
+        // INITIAL LOAD
+        // ===============================
         loadTable();
 
-        $("#tableSearch").on("keyup", function () {
-            currentPage = 1;
-            loadTable(...currentFilters());
-        });
 
-        $("#audiobookFilter").on("change", function () {
-            currentPage = 1;
-            loadTable(...currentFilters());
-        });
+        // ===============================
+        // SEARCH
+        // ===============================
+        $("#tableSearch").on(
+            "keyup",
+            function () {
 
-        $("#prevPage").click(function () {
-            if (currentPage > 1) { currentPage--; loadTable(...currentFilters()); }
-        });
+                currentPage = 1;
 
-        $("#nextPage").click(function () {
-            if (currentPage < totalPages) { currentPage++; loadTable(...currentFilters()); }
-        });
+                loadTable(
+                    ...currentFilters()
+                );
 
-        window.deleteQuiz = function (quizId) {
-            if (!confirm("Yakin mau hapus quiz ini? Semua pertanyaan & opsi jawaban di dalamnya akan ikut terhapus PERMANEN.")) return;
+            }
+        );
+
+
+        // ===============================
+        // SERIES FILTER
+        // ===============================
+        $("#seriesFilter").on(
+            "change",
+            function () {
+
+                currentPage = 1;
+
+                loadTable(
+                    ...currentFilters()
+                );
+
+            }
+        );
+
+
+        // ===============================
+        // PREVIOUS PAGE
+        // ===============================
+        $("#prevPage").click(
+            function () {
+
+                if (currentPage > 1) {
+
+                    currentPage--;
+
+                    loadTable(
+                        ...currentFilters()
+                    );
+
+                }
+
+            }
+        );
+
+
+        // ===============================
+        // NEXT PAGE
+        // ===============================
+        $("#nextPage").click(
+            function () {
+
+                if (
+                    currentPage <
+                    totalPages
+                ) {
+
+                    currentPage++;
+
+                    loadTable(
+                        ...currentFilters()
+                    );
+
+                }
+
+            }
+        );
+
+
+        // ===============================
+        // DELETE QUIZ
+        // ===============================
+        window.deleteQuiz = function (
+            quizId
+        ) {
+
+            if (
+                !confirm(
+                    "Yakin mau hapus quiz ini? " +
+                    "Semua pertanyaan & opsi jawaban di dalamnya " +
+                    "akan ikut terhapus PERMANEN."
+                )
+            ) {
+
+                return;
+
+            }
+
 
             $.ajax({
+
                 url: '/admin/quiz/delete',
+
                 type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ Quiz: quizId.toString() }),
+
+                contentType:
+                    'application/json',
+
+                data: JSON.stringify({
+
+                    Quiz:
+                        quizId.toString()
+
+                }),
+
+
                 success: function (res) {
-                    if (res.code === 200) {
-                        loadTable(...currentFilters());
-                    } else {
-                        alert(res.message || "Failed to delete quiz.");
+
+                    if (
+                        res.code === 200
+                    ) {
+
+                        loadTable(
+                            ...currentFilters()
+                        );
+
                     }
+
+                    else {
+
+                        alert(
+                            res.message ||
+                            "Failed to delete quiz."
+                        );
+
+                    }
+
                 },
+
+
                 error: function () {
-                    alert("Server error. Please try again.");
+
+                    alert(
+                        "Server error. Please try again."
+                    );
+
                 }
+
             });
+
         };
+
+
     });
+
 </script>

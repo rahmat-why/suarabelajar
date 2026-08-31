@@ -1,16 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace suara_belajar.Models.Assessment
+﻿namespace suara_belajar.Models.Assessment
 {
     public class SubmitAssessmentRequest
     {
-        public string AssessmentId { get; set; }
-        public List<SubmitAnswerDto> Answers { get; set; } = new();
+        public string SeriesId { get; set; }
+
+        public string QuizId { get; set; }
+
+        public List<SubmitAssessmentAnswer> Answers { get; set; }
     }
 
-    public class SubmitAnswerDto
+
+    public class SubmitAssessmentAnswer
     {
         public string AssessmentQuestionId { get; set; }
-        public List<string> SelectedOptionIds { get; set; } = new();
+
+        public List<string> SelectedOptionIds { get; set; }
     }
 }

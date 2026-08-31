@@ -6,6 +6,7 @@
     var pkg = ViewBag.Package;
     bool isSeries = pkg != null && (bool)pkg.is_series;
     string pkgName = pkg != null ? (string)pkg.name : "";
+    string pkgId = pkg != null ? (string)pkg.package_id : "";
 }
 
 <!-- ===================== TAB ===================== -->
@@ -16,14 +17,10 @@
             Listen
         </a>
 
-        <a href="/customer/reading?audiobook_id=@audiobookId"
-           class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white hover:border-gray-500 transition">
+        <a id="tabRead"
+           href="/customer/reading?audiobook_id=@audiobookId"
+           class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white hover:border-gray-500 transition hidden">
             Read
-        </a>
-
-        <a href="/customer/assessment?audiobook_id=@audiobookId"
-           class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white hover:border-gray-500 transition">
-            Assessment
         </a>
     </div>
 </div>
@@ -74,7 +71,7 @@
     $(document).ready(loadDetail);
 
     const IS_SERIES = @(isSeries ? "true" : "false");
-    const PACKAGE_NAME = "@Html.Raw(System.Text.Json.JsonEncodedText.Encode(pkgName ?? ""))";
+    const PACKAGE_ID = "@Html.Raw(System.Text.Json.JsonEncodedText.Encode(pkgId ?? ""))";
 
     function loadDetail() {
         $.ajax({
@@ -103,21 +100,29 @@
         });
     }
 
-        function renderDetail(item) {
-            $("#detail").html(`
-                    <div class="flex flex-col sm:flex-row gap-6">
-                        ${!IS_SERIES ? `<img src="/Audiobook/image/${PACKAGE_NAME}/${item.cover_image}" class="w-40 h-40 rounded-2xl object-cover mx-auto sm:mx-0">` : ""}
+    function renderDetail(item) {
+        $("#detail").html(`
+                        <div class="flex flex-col sm:flex-row gap-6">
+                            ${!IS_SERIES ? `<img src="/Audiobook/image/${PACKAGE_ID}/${item.cover_image}" class="w-40 h-40 rounded-2xl object-cover mx-auto sm:mx-0">` : ""}
 
-                        <div class="flex flex-col justify-center text-center sm:text-left">
-                            <h3 class="text-2xl font-bold mb-2">${item.title}</h3>
-                            <p class="text-gray-300">
-                                ${item.description ?? "No description available."}
-                            </p>
+                            <div class="flex flex-col justify-center text-center sm:text-left">
+                                <h3 class="text-2xl font-bold mb-2">${item.title}</h3>
+                                <p class="text-gray-300">
+                                    ${item.description ?? "No description available."}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                `);
-            $("#audio-section").removeClass("hidden");
+                    `);
+        $("#audio-section").removeClass("hidden");
+
+        // Only show the "Read" tab when this audiobook actually
+        // has reading content.
+        if (item.has_reading) {
+            $("#tabRead").removeClass("hidden");
+        } else {
+            $("#tabRead").addClass("hidden");
         }
+    }
 
     /* ===================== AUDIO LOGIC ===================== */
     const AUDIO_ID = "@audiobookId";
@@ -130,11 +135,42 @@
     const current = document.getElementById("current");
     const duration = document.getElementById("duration");
 
+    let LISTENING_ID = null;
+
+    function startListening() {
+        $.ajax({
+            url: "/customer/listening/start",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ skip: 0, take: 0, data: AUDIO_ID }),
+            success: res => {
+                if (res.code === 200) {
+                    LISTENING_ID = res.data.listening_id;
+                }
+            }
+        });
+    }
+
+    function finishListening() {
+        if (!LISTENING_ID) return;
+
+        $.ajax({
+            url: "/customer/listening/finish",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ skip: 0, take: 0, data: LISTENING_ID })
+        });
+
+        // Prevent a second finish call if "ended" somehow fires twice.
+        LISTENING_ID = null;
+    }
+
     playBtn.onclick = () => {
         if (!audio.src || audio.src === "" || audio.src.includes(window.location.pathname)) {
             showLoader(true);
             audio.src = "/customer/playaudio/" + AUDIO_ID;
             audio.load();
+            startListening();
         }
 
         if (audio.paused) {
@@ -146,6 +182,9 @@
             audio.pause();
         }
     };
+
+    /* Listening finished naturally */
+    audio.onended = () => finishListening();
 
     /* Buffering Logic */
     audio.onwaiting = () => showLoader(true);
