@@ -1,0 +1,1304 @@
+﻿@{
+    ViewData["Title"] = "Edit Quiz";
+    var quizId = Context.GetRouteValue("id")?.ToString() ?? Context.Request.Query["id"].ToString();
+    Layout = "_LayoutAdmin";
+}
+
+<div class="p-6 max-w-4xl mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">
+                Edit Quiz
+            </h2>
+
+            <a href="/admin/quiz/index"
+               class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-400 transition">
+                <svg class="w-6 h-6"
+                     fill="none"
+                     stroke="currentColor"
+                     viewBox="0 0 24 24">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </a>
+        </div>
+
+        <form id="quizForm">
+
+            <!-- ===============================
+                 QUIZ HEADER
+            ================================ -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+
+                <!-- Quiz ID -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Quiz ID
+                    </label>
+
+                    <input type="text"
+                           id="quizIdDisplay"
+                           disabled
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-600 dark:text-white cursor-not-allowed" />
+                </div>
+
+                <!-- Series -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Series
+                    </label>
+
+                    <select id="seriesId"
+                            class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+
+                        <option value="">
+                            -- Select Series --
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+
+
+            <!-- ===============================
+                 QUIZ INFORMATION
+            ================================ -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+
+                <!-- Quiz Title -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Quiz Title
+                    </label>
+
+                    <input type="text"
+                           id="title"
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
+                </div>
+
+                <!-- Minimum Point -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Minimum Point (lulus)
+                    </label>
+
+                    <input type="number"
+                           id="minimumPoint"
+                           min="0"
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white" />
+                </div>
+
+            </div>
+
+
+            <!-- ===============================
+                 NOTES
+            ================================ -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+
+                <!-- Notes 1 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Notes 1
+                    </label>
+
+                    <textarea id="notes1"
+                              rows="4"
+                              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                              placeholder="Enter notes 1..."></textarea>
+                </div>
+
+                <!-- Notes 2 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Notes 2
+                    </label>
+
+                    <textarea id="notes2"
+                              rows="4"
+                              class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                              placeholder="Enter notes 2..."></textarea>
+                </div>
+
+            </div>
+
+
+            <!-- ===============================
+                 QUESTIONS
+            ================================ -->
+            <div class="flex justify-between items-center mb-3">
+
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                    Questions
+                </h3>
+
+                <button type="button"
+                        id="addQuestionBtn"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow transition">
+
+                    + Add Question
+
+                </button>
+
+            </div>
+
+            <div id="questionsContainer"
+                 class="space-y-4 mb-6">
+            </div>
+
+            <p class="text-xs text-gray-400 mb-4">
+                Catatan: saat disimpan, seluruh question &amp; option lama pada quiz ini akan diganti dengan yang ada di form.
+            </p>
+
+
+            <!-- ===============================
+                 ACTIONS
+            ================================ -->
+            <div class="flex gap-3">
+
+                <a href="/admin/quiz/index"
+                   class="w-full text-center py-2 rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium transition">
+
+                    Cancel
+
+                </a>
+
+                <button type="submit"
+                        class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
+
+                    Save Quiz
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+<!-- ===============================
+     QUESTION TEMPLATE
+================================ -->
+<template id="questionTemplate">
+
+    <div class="question-block border border-gray-300 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
+
+        <div class="flex justify-between items-start mb-3">
+
+            <span class="question-number font-semibold text-gray-700 dark:text-gray-200">
+                Question #1
+            </span>
+
+            <button type="button"
+                    class="removeQuestionBtn text-red-600 hover:text-red-800 text-sm font-medium">
+
+                Remove Question
+
+            </button>
+
+        </div>
+
+
+        <!-- Question Text -->
+        <div class="mb-3">
+
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Question Text
+            </label>
+
+            <textarea rows="2"
+                      class="questionText w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                      placeholder="Type the question here..."></textarea>
+
+        </div>
+
+
+        <!-- Question Type + Point -->
+        <div class="grid grid-cols-2 gap-4 mb-3">
+
+            <div>
+
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Question Type
+                </label>
+
+                <select class="questionType w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white">
+
+                    <option value="single_choice">
+                        Single Choice (1 jawaban benar)
+                    </option>
+
+                    <option value="multiple_choice">
+                        Multiple Choice (bisa &gt;1 jawaban benar)
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div>
+
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Point
+                </label>
+
+                <input type="number"
+                       min="0"
+                       value="10"
+                       class="questionPoint w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
+
+            </div>
+
+        </div>
+
+
+        <!-- ===============================
+             REASON CORRECT
+        ================================ -->
+        <div class="mb-3">
+
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Reason Correct
+            </label>
+
+            <textarea rows="3"
+                      class="reasonCorrect w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                      placeholder="Explain why the correct answer is correct..."></textarea>
+
+        </div>
+
+
+        <!-- Options -->
+        <div class="mb-2">
+
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Options (centang = jawaban benar)
+            </label>
+
+            <div class="optionsContainer space-y-2"></div>
+
+        </div>
+
+
+        <button type="button"
+                class="addOptionBtn text-sm text-blue-600 hover:text-blue-800 font-medium">
+
+            + Add Option
+
+        </button>
+
+    </div>
+
+</template>
+
+
+<!-- ===============================
+     OPTION TEMPLATE
+================================ -->
+<template id="optionTemplate">
+
+    <div class="option-row flex items-center gap-2">
+
+        <input type="checkbox"
+               class="optionCorrect w-5 h-5 text-blue-600 rounded focus:ring-blue-500 shrink-0" />
+
+        <input type="text"
+               placeholder="Option text..."
+               class="optionText flex-1 px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white" />
+
+        <button type="button"
+                class="removeOptionBtn text-red-500 hover:text-red-700 shrink-0">
+
+            <svg class="w-5 h-5"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24">
+
+                <path stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12" />
+
+            </svg>
+
+        </button>
+
+    </div>
+
+</template>
+
+
+<script>
+    const quizId = "@quizId";
+
+    $(document).ready(function () {
+
+        // ==========================================
+        // CHECK QUIZ ID
+        // ==========================================
+        if (!quizId) {
+            alert("Quiz ID not found.");
+            window.location.href = "/admin/quiz/index";
+            return;
+        }
+
+
+        // ==========================================
+        // RENUMBER QUESTIONS
+        // ==========================================
+        function renumberQuestions() {
+            $("#questionsContainer .question-block").each(function (i) {
+                $(this)
+                    .find(".question-number")
+                    .text("Question #" + (i + 1));
+            });
+        }
+
+
+        // ==========================================
+        // ADD OPTION
+        // ==========================================
+        function addOption($questionBlock, data = null) {
+
+            const tpl = document.getElementById("optionTemplate");
+
+            if (!tpl) {
+                console.error("Option template not found.");
+                return;
+            }
+
+            const clone = document.importNode(tpl.content, true);
+
+            $questionBlock
+                .find(".optionsContainer")
+                .append(clone);
+
+            const $row = $questionBlock
+                .find(".option-row")
+                .last();
+
+            // Populate existing option
+            if (data) {
+
+                $row
+                    .find(".optionText")
+                    .val(
+                        data.optionText ??
+                        data.OptionText ??
+                        data.option_text ??
+                        ""
+                    );
+
+                $row
+                    .find(".optionCorrect")
+                    .prop(
+                        "checked",
+                        Boolean(
+                            data.isCorrect ??
+                            data.IsCorrect ??
+                            data.is_correct ??
+                            false
+                        )
+                    );
+            }
+        }
+
+
+        // ==========================================
+        // ADD QUESTION
+        // ==========================================
+        function addQuestion(data = null) {
+
+            const tpl = document.getElementById("questionTemplate");
+
+            if (!tpl) {
+                console.error("Question template not found.");
+                return;
+            }
+
+            const clone = document.importNode(tpl.content, true);
+
+            $("#questionsContainer").append(clone);
+
+            const $block = $("#questionsContainer .question-block").last();
+
+
+            // ==========================================
+            // POPULATE EXISTING QUESTION
+            // ==========================================
+            if (data) {
+
+                $block
+                    .find(".questionText")
+                    .val(
+                        data.question ??
+                        data.Question ??
+                        ""
+                    );
+
+
+                $block
+                    .find(".questionType")
+                    .val(
+                        data.questionType ??
+                        data.QuestionType ??
+                        data.question_type ??
+                        "single_choice"
+                    );
+
+
+                $block
+                    .find(".questionPoint")
+                    .val(
+                        data.point ??
+                        data.Point ??
+                        10
+                    );
+
+
+                $block
+                    .find(".reasonCorrect")
+                    .val(
+                        data.reasonCorrect ??
+                        data.ReasonCorrect ??
+                        data.reason_correct ??
+                        ""
+                    );
+
+
+                // ==========================================
+                // POPULATE OPTIONS
+                // ==========================================
+                const options =
+                    data.options ??
+                    data.Options ??
+                    [];
+
+                if (options.length > 0) {
+
+                    options.forEach(function (option) {
+                        addOption($block, option);
+                    });
+
+                } else {
+
+                    addOption($block);
+                    addOption($block);
+
+                }
+
+            } else {
+
+                // New question
+                addOption($block);
+                addOption($block);
+
+            }
+
+            renumberQuestions();
+        }
+
+
+        // ==========================================
+        // ADD QUESTION BUTTON
+        // ==========================================
+        $("#addQuestionBtn").on("click", function () {
+            addQuestion();
+        });
+
+
+        // ==========================================
+        // REMOVE QUESTION
+        // ==========================================
+        $("#questionsContainer").on(
+            "click",
+            ".removeQuestionBtn",
+            function () {
+
+                if (!confirm(
+                    "Hapus question ini beserta semua opsinya?"
+                )) {
+                    return;
+                }
+
+                $(this)
+                    .closest(".question-block")
+                    .remove();
+
+                renumberQuestions();
+            }
+        );
+
+
+        // ==========================================
+        // ADD OPTION BUTTON
+        // ==========================================
+        $("#questionsContainer").on(
+            "click",
+            ".addOptionBtn",
+            function () {
+
+                const $block = $(this)
+                    .closest(".question-block");
+
+                addOption($block);
+            }
+        );
+
+
+        // ==========================================
+        // REMOVE OPTION
+        // ==========================================
+        $("#questionsContainer").on(
+            "click",
+            ".removeOptionBtn",
+            function () {
+
+                const $block = $(this)
+                    .closest(".question-block");
+
+                const optionCount = $block
+                    .find(".option-row")
+                    .length;
+
+                if (optionCount <= 2) {
+
+                    alert(
+                        "Minimal harus ada 2 opsi jawaban."
+                    );
+
+                    return;
+                }
+
+                $(this)
+                    .closest(".option-row")
+                    .remove();
+            }
+        );
+
+
+        // ==========================================
+        // SINGLE CHOICE
+        // ==========================================
+        $("#questionsContainer").on(
+            "change",
+            ".optionCorrect",
+            function () {
+
+                const $block = $(this)
+                    .closest(".question-block");
+
+                const type = $block
+                    .find(".questionType")
+                    .val();
+
+                if (
+                    type === "single_choice" &&
+                    $(this).is(":checked")
+                ) {
+
+                    $block
+                        .find(".optionCorrect")
+                        .not(this)
+                        .prop("checked", false);
+                }
+            }
+        );
+
+
+        // ==========================================
+        // QUESTION TYPE CHANGE
+        // ==========================================
+        $("#questionsContainer").on(
+            "change",
+            ".questionType",
+            function () {
+
+                const $block = $(this)
+                    .closest(".question-block");
+
+                if ($(this).val() === "single_choice") {
+
+                    const $checked = $block
+                        .find(".optionCorrect:checked");
+
+                    if ($checked.length > 1) {
+
+                        $checked
+                            .not($checked.first())
+                            .prop("checked", false);
+                    }
+                }
+            }
+        );
+
+
+        // ==========================================
+        // LOAD SERIES
+        // ==========================================
+        function loadSeries() {
+
+            return $.ajax({
+
+                url: "/admin/quiz/list-series",
+
+                type: "GET"
+
+            })
+            .done(function (res) {
+
+                if (
+                    res &&
+                    res.code === 200 &&
+                    Array.isArray(res.data)
+                ) {
+
+                    $("#seriesId").empty();
+
+                    $("#seriesId").append(`
+                        <option value="">
+                            -- Select Series --
+                        </option>
+                    `);
+
+                    res.data.forEach(function (series) {
+
+                        $("#seriesId").append(`
+                            <option value="${series.series_id}">
+                                ${series.title}
+                            </option>
+                        `);
+
+                    });
+                }
+
+            })
+            .fail(function () {
+
+                alert("Failed to load series list.");
+
+            });
+        }
+
+
+        // ==========================================
+        // LOAD QUIZ DATA
+        // ==========================================
+        function loadQuizData() {
+
+            $.ajax({
+
+                url:
+                    "/admin/quiz/get/" +
+                    encodeURIComponent(quizId),
+
+                type: "GET",
+
+                success: function (res) {
+
+                    console.log("Quiz API Response:", res);
+
+                    if (
+                        res &&
+                        res.code === 200 &&
+                        res.data
+                    ) {
+
+                        const data = res.data;
+
+
+                        // ==========================================
+                        // QUIZ ID
+                        // ==========================================
+                        $("#quizIdDisplay").val(
+                            data.quizId ??
+                            data.QuizId ??
+                            data.quiz_id ??
+                            quizId
+                        );
+
+
+                        // ==========================================
+                        // SERIES
+                        // ==========================================
+                        console.log("Series: " + data.seriesId);
+                        $("#seriesId").val(
+                            data.seriesId ??
+                            data.SeriesId ??
+                            data.series_id ??
+                            ""
+                        );
+
+
+                        // ==========================================
+                        // TITLE
+                        // ==========================================
+                        $("#title").val(
+                            data.title ??
+                            data.Title ??
+                            ""
+                        );
+
+
+                        // ==========================================
+                        // MINIMUM POINT
+                        // ==========================================
+                        $("#minimumPoint").val(
+                            data.minimumPoint ??
+                            data.MinimumPoint ??
+                            data.minimum_point ??
+                            0
+                        );
+
+
+                        // ==========================================
+                        // NOTES
+                        // ==========================================
+                        $("#notes1").val(
+                            data.notes1 ??
+                            data.Notes1 ??
+                            ""
+                        );
+
+                        $("#notes2").val(
+                            data.notes2 ??
+                            data.Notes2 ??
+                            ""
+                        );
+
+
+                        // ==========================================
+                        // QUESTIONS
+                        // ==========================================
+                        const questions =
+                            data.questions ??
+                            data.Questions ??
+                            [];
+
+
+                        $("#questionsContainer").empty();
+
+
+                        if (questions.length === 0) {
+
+                            addQuestion();
+
+                        } else {
+
+                            questions.forEach(function (q) {
+
+                                addQuestion({
+
+                                    question:
+                                        q.question ??
+                                        q.Question ??
+                                        "",
+
+                                    questionType:
+                                        q.questionType ??
+                                        q.QuestionType ??
+                                        q.question_type ??
+                                        "single_choice",
+
+                                    point:
+                                        q.point ??
+                                        q.Point ??
+                                        10,
+
+                                    reasonCorrect:
+                                        q.reasonCorrect ??
+                                        q.ReasonCorrect ??
+                                        q.reason_correct ??
+                                        "",
+
+                                    options:
+                                        (
+                                            q.options ??
+                                            q.Options ??
+                                            []
+                                        ).map(function (o) {
+
+                                            return {
+
+                                                optionText:
+                                                    o.optionText ??
+                                                    o.OptionText ??
+                                                    o.option_text ??
+                                                    "",
+
+                                                isCorrect:
+                                                    o.isCorrect ??
+                                                    o.IsCorrect ??
+                                                    o.is_correct ??
+                                                    false
+                                            };
+
+                                        })
+
+                                });
+
+                            });
+                        }
+
+                    } else {
+
+                        alert(
+                            res?.message ||
+                            "Quiz not found."
+                        );
+
+                        window.location.href =
+                            "/admin/quiz/index";
+                    }
+                },
+
+                error: function (xhr) {
+
+                    console.error(
+                        "Load quiz error:",
+                        xhr.responseText
+                    );
+
+                    alert(
+                        "Failed to load quiz data."
+                    );
+
+                    window.location.href =
+                        "/admin/quiz/index";
+                }
+
+            });
+        }
+
+
+        // ==========================================
+        // BUILD QUESTIONS PAYLOAD
+        // ==========================================
+        function buildQuestionsPayload() {
+
+            const questions = [];
+
+            let valid = true;
+
+
+            $("#questionsContainer .question-block")
+                .each(function () {
+
+                    const $block = $(this);
+
+
+                    // ==========================================
+                    // QUESTION TEXT
+                    // ==========================================
+                    const questionText =
+                        String(
+                            $block
+                                .find(".questionText")
+                                .val() || ""
+                        ).trim();
+
+
+                    const questionType =
+                        $block
+                            .find(".questionType")
+                            .val();
+
+
+                    const point =
+                        parseInt(
+                            $block
+                                .find(".questionPoint")
+                                .val(),
+                            10
+                        ) || 0;
+
+
+                    const reasonCorrect =
+                        String(
+                            $block
+                                .find(".reasonCorrect")
+                                .val() || ""
+                        ).trim();
+
+
+                    // ==========================================
+                    // VALIDATE QUESTION
+                    // ==========================================
+                    if (!questionText) {
+
+                        alert(
+                            "Question text tidak boleh kosong."
+                        );
+
+                        valid = false;
+
+                        return false;
+                    }
+
+
+                    // ==========================================
+                    // OPTIONS
+                    // ==========================================
+                    const options = [];
+
+
+                    $block
+                        .find(".option-row")
+                        .each(function () {
+
+                            const $row = $(this);
+
+
+                            const optionText =
+                                String(
+                                    $row
+                                        .find(".optionText")
+                                        .val() || ""
+                                ).trim();
+
+
+                            const isCorrect =
+                                $row
+                                    .find(".optionCorrect")
+                                    .is(":checked");
+
+
+                            if (optionText) {
+
+                                options.push({
+
+                                    optionText:
+                                        optionText,
+
+                                    isCorrect:
+                                        isCorrect
+
+                                });
+                            }
+
+                        });
+
+
+                    // ==========================================
+                    // VALIDATE OPTIONS
+                    // ==========================================
+                    if (options.length < 2) {
+
+                        alert(
+                            "Setiap question minimal harus memiliki 2 opsi."
+                        );
+
+                        valid = false;
+
+                        return false;
+                    }
+
+
+                    // ==========================================
+                    // VALIDATE CORRECT ANSWER
+                    // ==========================================
+                    const correctCount =
+                        options.filter(
+                            option => option.isCorrect
+                        ).length;
+
+
+                    if (correctCount === 0) {
+
+                        alert(
+                            "Setiap question harus memiliki minimal 1 jawaban benar."
+                        );
+
+                        valid = false;
+
+                        return false;
+                    }
+
+
+                    // ==========================================
+                    // SINGLE CHOICE VALIDATION
+                    // ==========================================
+                    if (
+                        questionType === "single_choice" &&
+                        correctCount > 1
+                    ) {
+
+                        alert(
+                            "Single Choice hanya boleh memiliki 1 jawaban benar."
+                        );
+
+                        valid = false;
+
+                        return false;
+                    }
+
+
+                    // ==========================================
+                    // PUSH QUESTION
+                    // ==========================================
+                    questions.push({
+
+                        question:
+                            questionText,
+
+                        questionType:
+                            questionType,
+
+                        point:
+                            point,
+
+                        reasonCorrect:
+                            reasonCorrect,
+
+                        options:
+                            options
+
+                    });
+
+                });
+
+
+            return valid
+                ? questions
+                : null;
+        }
+
+
+        // ==========================================
+        // SUBMIT FORM
+        // ==========================================
+        $("#quizForm").on(
+            "submit",
+            function (e) {
+
+                e.preventDefault();
+
+
+                const seriesId =
+                    $("#seriesId").val();
+
+
+                const title =
+                    String(
+                        $("#title").val() || ""
+                    ).trim();
+
+
+                const minimumPoint =
+                    parseInt(
+                        $("#minimumPoint").val(),
+                        10
+                    ) || 0;
+
+
+                const notes1 =
+                    String(
+                        $("#notes1").val() || ""
+                    ).trim();
+
+
+                const notes2 =
+                    String(
+                        $("#notes2").val() || ""
+                    ).trim();
+
+
+                // ==========================================
+                // VALIDATION
+                // ==========================================
+                if (!seriesId || !title) {
+
+                    alert(
+                        "Series dan Title wajib diisi."
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    $("#questionsContainer .question-block")
+                        .length === 0
+                ) {
+
+                    alert(
+                        "Minimal harus ada 1 question."
+                    );
+
+                    return;
+                }
+
+
+                const questions =
+                    buildQuestionsPayload();
+
+
+                if (!questions) {
+                    return;
+                }
+
+
+                // ==========================================
+                // BUILD PAYLOAD
+                // ==========================================
+                const payload = {
+                    isEdit: true,
+
+                    quizId:
+                        quizId,
+
+                    seriesId:
+                        seriesId,
+
+                    title:
+                        title,
+
+                    minimumPoint:
+                        minimumPoint,
+
+                    notes1:
+                        notes1,
+
+                    notes2:
+                        notes2,
+
+                    questions:
+                        questions
+
+                };
+
+
+                console.log(
+                    "Save Quiz Payload:",
+                    payload
+                );
+
+
+                // ==========================================
+                // DISABLE SUBMIT
+                // ==========================================
+                const $submitButton =
+                    $("#quizForm button[type='submit']");
+
+                $submitButton
+                    .prop("disabled", true)
+                    .text("Saving...");
+
+
+                // ==========================================
+                // SAVE
+                // ==========================================
+                $.ajax({
+
+                    url:
+                        "/admin/quiz/save",
+
+                    type:
+                        "POST",
+
+                    contentType:
+                        "application/json; charset=utf-8",
+
+                    dataType:
+                        "json",
+
+                    data:
+                        JSON.stringify(payload),
+
+                    success:
+                        function (res) {
+
+                            console.log(
+                                "Save Quiz Response:",
+                                res
+                            );
+
+
+                            if (
+                                res &&
+                                res.code === 200
+                            ) {
+
+                                alert(
+                                    res.message ||
+                                    "Quiz successfully updated."
+                                );
+
+                                window.location.href =
+                                    "/admin/quiz/index";
+
+                            } else {
+
+                                alert(
+                                    res?.message ||
+                                    "Failed to save quiz."
+                                );
+
+                                $submitButton
+                                    .prop("disabled", false)
+                                    .text("Save Quiz");
+                            }
+
+                        },
+
+                    error:
+                        function (xhr) {
+
+                            console.error(
+                                "Save Quiz Error:",
+                                xhr.responseText
+                            );
+
+                            let message =
+                                "Server error. Please try again.";
+
+                            try {
+
+                                const response =
+                                    JSON.parse(
+                                        xhr.responseText
+                                    );
+
+                                if (response.message) {
+                                    message =
+                                        response.message;
+                                }
+
+                            } catch (e) {
+
+                                // Ignore invalid JSON response
+
+                            }
+
+
+                            alert(message);
+
+
+                            $submitButton
+                                .prop("disabled", false)
+                                .text("Save Quiz");
+
+                        }
+
+                });
+
+            }
+        );
+
+
+        // ==========================================
+        // INITIALIZE
+        // ==========================================
+        loadSeries()
+            .always(function () {
+                loadQuizData();
+            });
+
+    });
+</script>

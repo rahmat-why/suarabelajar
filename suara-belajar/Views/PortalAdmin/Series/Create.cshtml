@@ -1,0 +1,126 @@
+﻿@{
+    ViewData["Title"] = "Add Series";
+    Layout = "_LayoutAdmin";
+
+}
+<div class="p-6 max-w-lg mx-auto">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100">Add Series</h2>
+            <a href="/admin/series/index"
+               class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-400 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </a>
+        </div>
+
+        <form id="seriesForm">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Series ID
+                </label>
+                <input type="text"
+                       id="seriesId"
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                       placeholder="e.g. season1" />
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Package</label>
+                <select id="packageId"
+                        class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                    <option value="">-- Select Package --</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
+                <input type="text" id="seriesName"
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                       placeholder="e.g. Season 1" />
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sequence</label>
+                <input type="number" id="sequence" min="1"
+                       class="w-full px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                       placeholder="e.g. 1" />
+            </div>
+
+            <div class="flex gap-3">
+                <a href="/admin/series/index"
+                   class="w-full text-center py-2 rounded-lg bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-500 text-gray-800 dark:text-white font-medium transition">
+                    Cancel
+                </a>
+                <button type="submit"
+                        class="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        // Populate package dropdown
+        $.ajax({
+            url: '/admin/package/list-active',
+            type: 'GET',
+            success: function (res) {
+                if (res.code === 200 && Array.isArray(res.data)) {
+                    res.data.forEach(pkg => {
+                        $("#packageId").append(
+                            `<option value="${pkg.package_id}">${pkg.name}</option>`
+                        );
+                    });
+                }
+            },
+            error: function () {
+                alert("Failed to load package list.");
+            }
+        });
+
+        $("#seriesForm").on("submit", function (e) {
+        e.preventDefault();
+
+        const seriesId = $("#seriesId").val().trim();
+        const packageId = $("#packageId").val();
+        const name = $("#seriesName").val().trim();
+        const sequence = $("#sequence").val();
+
+        if (!seriesId || !packageId || !name || !sequence) {
+            alert("Series ID, Package, Name, and Sequence are required.");
+            return;
+        }
+
+        $("button[type=submit]").prop("disabled", true).text("Saving...");
+
+            $.ajax({
+                url: '/admin/series/save',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    IsEdit: false,
+                    SeriesId: seriesId,
+                    PackageId: packageId,
+                    Name: name,
+                    Sequence: parseInt(sequence)
+                }),
+                success: function (res) {
+                    if (res.code === 200) {
+                        window.location.href = "/admin/series/index";
+                    } else {
+                        alert(res.message || "Failed to save series.");
+                        $("button[type=submit").prop("disabled", false).text("Save");
+                    }
+                },
+                error: function () {
+                    alert("Server error. Please try again.");
+                    $("button[type=submit").prop("disabled", false).text("Save");
+                }
+            });
+        });
+    });
+</script>

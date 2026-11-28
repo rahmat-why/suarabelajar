@@ -1,0 +1,303 @@
+﻿@{
+    ViewData["Title"] = "Master Audiobook";
+    Layout = "_LayoutAdmin";
+
+}
+<div class="p-6 max-w-7xl mx-auto">
+    <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
+
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Master Audiobook</h2>
+            <a href="/admin/audiobook/create"
+               class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Audiobook
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div class="bg-green-100 dark:bg-green-800 p-4 rounded-lg shadow text-center">
+                <h3 class="text-lg font-semibold text-green-800 dark:text-green-200">Active</h3>
+                <p id="totalActive" class="text-2xl font-bold text-green-800 dark:text-green-200">0</p>
+            </div>
+            <div class="bg-red-100 dark:bg-red-800 p-4 rounded-lg shadow text-center">
+                <h3 class="text-lg font-semibold text-red-800 dark:text-red-200">Deleted</h3>
+                <p id="totalDeleted" class="text-2xl font-bold text-red-800 dark:text-red-200">0</p>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <input type="text" id="tableSearch" placeholder="Search by title or description..."
+                   class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white w-full sm:w-64">
+
+            <div class="flex items-center gap-3 w-full sm:w-auto">
+                <select id="seriesFilter"
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white w-full sm:w-auto">
+                    <option value="">All Series</option>
+                </select>
+
+                <select id="statusFilter"
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                    <option value="Active" selected>Active</option>
+                    <option value="">ALL</option>
+                    <option value="Deleted">Deleted</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <table id="audiobookTable" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Cover</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Title</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Series</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Duration</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Created</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Audiobook</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="mt-4 flex justify-between items-center text-gray-700 dark:text-gray-200">
+            <button id="prevPage" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50">Previous</button>
+            <span id="pageInfo">Page 1 of 1</span>
+            <button id="nextPage" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50">Next</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function playAudio(url, title) {
+        const playerId = 'audioPlayerModal';
+        $(`#${playerId}`).remove();
+
+        const modal = `
+                <div id="${playerId}" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 max-w-lg w-full mx-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100">Now Playing</h3>
+                            <button onclick="closeAudioPlayer()" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-400 transition">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="text-center text-gray-700 dark:text-gray-300 mb-4 font-medium truncate px-4">${title || 'Audiobook'}</p>
+                        <audio controls autoplay class="w-full" controlsList="nodownload">
+                            <source src="${url}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
+                </div>`;
+
+        $('body').append(modal);
+        $(`#${playerId}`).on('click', function (e) {
+            if (e.target === this) closeAudioPlayer();
+        });
+    }
+
+    function closeAudioPlayer() {
+        $('#audioPlayerModal').remove();
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return "-";
+        return new Date(dateStr).toLocaleDateString('en-GB', {
+            day: '2-digit', month: 'short', year: 'numeric'
+        });
+    }
+
+    $(document).ready(function () {
+        let currentPage = 1;
+        const pageSize = 10;
+        let totalPages = 1;
+
+        // Populate series filter dropdown
+        $.ajax({
+            url: '/admin/audiobook/list-active',
+            type: 'GET',
+            success: function (res) {
+                if (res.code === 200 && Array.isArray(res.data)) {
+                    res.data.forEach(s => {
+                        $("#seriesFilter").append(
+                            `<option value="${s.series_id}">${s.name}</option>`
+                        );
+                    });
+                }
+            }
+        });
+
+        function currentFilters() {
+            return [$("#tableSearch").val(), $("#statusFilter").val(), $("#seriesFilter").val()];
+        }
+
+        function loadTable(search = "", status = "", seriesId = "") {
+            $.ajax({
+                url: '/admin/audiobook/load',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    Draw: 0,
+                    Skip: (currentPage - 1) * pageSize,
+                    Take: pageSize,
+                    Data: search,
+                    Status: status,
+                    Package: seriesId
+                }),
+                success: function (res) {
+                    const tbody = $("#audiobookTable tbody");
+                    tbody.empty();
+
+                    if (!res.data || res.data.length === 0) {
+                        tbody.append(`<tr><td colspan="8" class="px-6 py-4 text-center text-gray-500 dark:text-gray-300">No records found.</td></tr>`);
+                        totalPages = 1;
+                    } else {
+                        res.data.forEach(row => {
+                            const coverImg = row.cover_image
+                                ? `<img src="/Audiobook/image/${row.package_id}/${row.cover_image}?v=${encodeURIComponent(row.updated_date || row.created_date || '')}"
+                                        alt="${row.title || 'Cover'}"
+                                        class="w-12 h-16 object-cover rounded shadow">`
+                                : `<div class="w-12 h-16 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center text-xs text-gray-500">
+                                        No Image
+                                   </div>`;
+
+                            const audioUrl = `/Audiobook/audio/${row.package_id}/${row.audiobook_id}.mp3`;
+                            const seriesLabel = row.series_name ? `${row.package_id} - ${row.series_name}` : (row.series_id || '-');
+
+                            const playButton = `
+                                    <button onclick="playAudio('${audioUrl}', '${(row.title || 'Audiobook').replace(/'/g, "\\'")}')"
+                                            class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition">
+                                        <svg class="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M8 5v10l7-5-7-5z"/>
+                                        </svg>
+                                        Play
+                                    </button>`;
+
+                            const isDeleted = row.status === "Deleted";
+
+                            const statusBadge = isDeleted
+                                ? `<span class="px-2 py-1 rounded-full text-sm font-semibold bg-red-200 text-red-800 dark:bg-red-700 dark:text-red-200">Deleted</span>`
+                                : `<span class="px-2 py-1 rounded-full text-sm font-semibold bg-green-200 text-green-800 dark:bg-green-700 dark:text-green-200">Active</span>`;
+
+                            const actionButtons = isDeleted
+                                ? `<button onclick="restoreAudiobook('${row.audiobook_id}')"
+                                        class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow transition">
+                                        Restore
+                                   </button>`
+                                : `<div class="flex items-center gap-2">
+                                        <a href="/admin/audiobook/edit/${row.audiobook_id}"
+                                           class="inline-flex items-center px-3 py-1.5 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-lg shadow transition">
+                                            Edit
+                                        </a>
+                                        <button onclick="deleteAudiobook('${row.audiobook_id}')"
+                                                class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow transition">
+                                            Delete
+                                        </button>
+                                   </div>`;
+
+                            tbody.append(`
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                        <td class="px-6 py-4">${coverImg}</td>
+                                        <td class="px-6 py-4 text-gray-800 dark:text-gray-100 font-medium">${row.title || '-'}</td>
+                                        <td class="px-6 py-4 text-gray-600 dark:text-gray-300 text-sm">${seriesLabel}</td>
+                                        <td class="px-6 py-4 text-gray-800 dark:text-gray-100">${row.duration || '-'}</td>
+                                        <td class="px-6 py-4 text-gray-800 dark:text-gray-100 text-sm">${formatDate(row.created_date)}</td>
+                                        <td class="px-6 py-4 text-center">${playButton}</td>
+                                        <td class="px-6 py-4">${statusBadge}</td>
+                                        <td class="px-6 py-4">${actionButtons}</td>
+                                    </tr>
+                                `);
+                        });
+
+                        totalPages = Math.ceil(res.recordsFiltered / pageSize);
+                        $("#totalActive").text(res.totalActive);
+                        $("#totalDeleted").text(res.totalDeleted);
+                    }
+
+                    $("#pageInfo").text(`Page ${currentPage} of ${totalPages}`);
+                    $("#prevPage").prop("disabled", currentPage === 1);
+                    $("#nextPage").prop("disabled", currentPage === totalPages);
+                },
+                error: function () {
+                    alert("Failed to load data.");
+                }
+            });
+        }
+
+        // Initial load
+        loadTable(...currentFilters());
+
+        $("#tableSearch").on("keyup", function () {
+            currentPage = 1;
+            loadTable(...currentFilters());
+        });
+
+        $("#statusFilter").on("change", function () {
+            currentPage = 1;
+            loadTable(...currentFilters());
+        });
+
+        $("#seriesFilter").on("change", function () {
+            currentPage = 1;
+            loadTable(...currentFilters());
+        });
+
+        $("#prevPage").click(function () {
+            if (currentPage > 1) { currentPage--; loadTable(...currentFilters()); }
+        });
+
+        $("#nextPage").click(function () {
+            if (currentPage < totalPages) { currentPage++; loadTable(...currentFilters()); }
+        });
+
+        window.deleteAudiobook = function (audiobookId) {
+            if (!confirm("Are you sure you want to delete this audiobook?")) return;
+
+            $.ajax({
+                url: '/admin/audiobook/delete',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ Audiobook: audiobookId.toString() }),
+                success: function (res) {
+                    if (res.code === 200) {
+                        loadTable(...currentFilters());
+                    } else {
+                        alert(res.message || "Failed to delete audiobook.");
+                    }
+                },
+                error: function () {
+                    alert("Server error. Please try again.");
+                }
+            });
+        };
+
+        window.restoreAudiobook = function (audiobookId) {
+            if (!confirm("Restore this audiobook?")) return;
+
+            $.ajax({
+                url: '/admin/audiobook/restore',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ Audiobook: audiobookId.toString() }),
+                success: function (res) {
+                    if (res.code === 200) {
+                        loadTable(...currentFilters());
+                    } else {
+                        alert(res.message || "Failed to restore audiobook.");
+                    }
+                },
+                error: function () {
+                    alert("Server error. Please try again.");
+                }
+            });
+        };
+    });
+</script>

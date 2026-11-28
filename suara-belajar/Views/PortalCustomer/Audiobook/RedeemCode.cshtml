@@ -1,0 +1,114 @@
+﻿@{
+    ViewData["Title"] = "Redeem Serial Number";
+    Layout = "_LayoutPublic";
+}
+
+<div class="min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md bg-[#151517] rounded-xl shadow-lg p-6">
+
+        <h2 class="text-xl font-semibold mb-4 text-center text-white">
+            Redeem Serial Number
+        </h2>
+
+        <form id="redeemForm" autocomplete="off">
+            <input id="txtCode"
+                   type="text"
+                   placeholder="Enter Serial Number"
+                   autocomplete="off"
+                   class="w-full bg-black/30 text-white placeholder-gray-400
+                          border border-gray-600 rounded-lg px-4 py-2
+                          focus:outline-none focus:ring-2 focus:ring-[#4f1636]" />
+
+            <button id="btnRedeem"
+                    type="submit"
+                    class="w-full mt-4
+                           bg-[#4f1636] hover:bg-[#4f1636]
+                           text-white font-medium py-2
+                           rounded-lg transition">
+                Redeem
+            </button>
+
+            <button id="btnTrial"
+                    type="button"
+                    class="relative w-full mt-2
+               bg-[#011930] hover:bg-[#011930]
+               text-white font-medium py-2
+               rounded-lg transition">
+
+                Free Trial
+
+                <span class="absolute -top-2 -right-2
+                 bg-red-500 text-white text-[10px]
+                 px-2 py-[2px] rounded-full font-bold">
+                    NEW
+                </span>
+            </button>
+        </form>
+
+        <div id="result" class="mt-4 text-sm text-center text-gray-200"></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $.get("/customer/session-check", function (res) {
+            if (res.active) {
+                // replace → no browser history
+                window.location.replace("/Audiobook/Explorer");
+            }
+        });
+
+        $("#redeemForm").on("submit", redeemCode);
+
+        $("#btnTrial").on("click", function () {
+            window.location.href = "/Trial";
+        });
+    });
+
+    function redeemCode(e) {
+        e.preventDefault(); // stop normal submit
+
+        const code = $("#txtCode").val().trim();
+
+        if (!code) {
+            showResult("Please enter a valid code", "red");
+            return;
+        }
+
+        $("#btnRedeem").prop("disabled", true).text("Processing...");
+
+        $.ajax({
+            url: "/customer/redeem",
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({ data: code }),
+            success: function (res) {
+                if (res.code === 200) {
+
+                    showResult("Redeem successful. Redirecting...", "green");
+
+                    setTimeout(() => {
+                        // replace prevents going back
+                        window.location.replace("/Audiobook/Explorer");
+                    }, 1000);
+
+                } else {
+                    showResult(res.message, "red");
+                    resetButton();
+                }
+            },
+            error: function () {
+                showResult("Server error. Please try again.", "red");
+                resetButton();
+            }
+        });
+    }
+
+    function showResult(message, color) {
+        $("#result").css("color", color).text(message);
+    }
+
+    function resetButton() {
+        $("#btnRedeem").prop("disabled", false).text("Redeem");
+    }
+</script>

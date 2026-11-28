@@ -1,0 +1,424 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "_LayoutAdmin";
+}
+
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900 p-6">
+
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 dark:text-white">
+            Admin Dashboard
+        </h1>
+
+        <p class="mt-2 text-gray-500 dark:text-gray-400">
+            Manage your SuaraBelajar system
+        </p>
+    </div>
+
+
+    <!-- Menu Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+
+        <!-- Package -->
+        <a href="/admin/package/index"
+           class="group bg-white dark:bg-gray-800 rounded-2xl p-6
+                  border border-gray-200 dark:border-gray-700
+                  shadow-sm hover:shadow-xl
+                  transition-all duration-300
+                  hover:-translate-y-1">
+
+            <div class="flex items-center justify-between">
+
+                <div class="w-12 h-12 rounded-xl
+                            bg-blue-100 dark:bg-blue-900/40
+                            flex items-center justify-center
+                            text-blue-600 dark:text-blue-400
+                            group-hover:scale-110
+                            transition-transform duration-300">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-6 h-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+
+                    </svg>
+
+                </div>
+
+                <span class="text-gray-300 dark:text-gray-600
+                             group-hover:text-blue-500
+                             transition-colors">
+
+                    →
+                </span>
+
+            </div>
+
+            <h2 class="mt-5 text-lg font-semibold
+                       text-gray-800 dark:text-white">
+
+                Package
+
+            </h2>
+
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+
+                Manage learning packages
+
+            </p>
+
+        </a>
+
+
+        <!-- Series -->
+        <a href="/admin/series/index"
+           class="group bg-white dark:bg-gray-800 rounded-2xl p-6
+                  border border-gray-200 dark:border-gray-700
+                  shadow-sm hover:shadow-xl
+                  transition-all duration-300
+                  hover:-translate-y-1">
+
+            <div class="flex items-center justify-between">
+
+                <div class="w-12 h-12 rounded-xl
+                            bg-purple-100 dark:bg-purple-900/40
+                            flex items-center justify-center
+                            text-purple-600 dark:text-purple-400
+                            group-hover:scale-110
+                            transition-transform duration-300">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-6 h-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+
+                    </svg>
+
+                </div>
+
+                <span class="text-gray-300 dark:text-gray-600
+                             group-hover:text-purple-500">
+
+                    →
+
+                </span>
+
+            </div>
+
+            <h2 class="mt-5 text-lg font-semibold
+                       text-gray-800 dark:text-white">
+
+                Series
+
+            </h2>
+
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+
+                Manage learning series
+
+            </p>
+
+        </a>
+
+
+        <!-- Audiobook -->
+        <a href="/admin/audiobook/index"
+           class="group bg-white dark:bg-gray-800 rounded-2xl p-6
+                  border border-gray-200 dark:border-gray-700
+                  shadow-sm hover:shadow-xl
+                  transition-all duration-300
+                  hover:-translate-y-1">
+
+            <div class="flex items-center justify-between">
+
+                <div class="w-12 h-12 rounded-xl
+                            bg-green-100 dark:bg-green-900/40
+                            flex items-center justify-center
+                            text-green-600 dark:text-green-400
+                            group-hover:scale-110
+                            transition-transform duration-300">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-6 h-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 19V6l12-3v13M9 19a3 3 0 11-6 0 3 3 0 016 0zm12-3a3 3 0 11-6 0 3 3 0 016 0z" />
+
+                    </svg>
+
+                </div>
+
+                <span class="text-gray-300 dark:text-gray-600
+                             group-hover:text-green-500">
+
+                    →
+
+                </span>
+
+            </div>
+
+            <h2 class="mt-5 text-lg font-semibold
+                       text-gray-800 dark:text-white">
+
+                Audiobook
+
+            </h2>
+
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+
+                Manage audiobook content
+
+            </p>
+
+        </a>
+
+
+        <!-- Quiz -->
+        <a href="/admin/quiz/index"
+           class="group bg-white dark:bg-gray-800 rounded-2xl p-6
+                  border border-gray-200 dark:border-gray-700
+                  shadow-sm hover:shadow-xl
+                  transition-all duration-300
+                  hover:-translate-y-1">
+
+            <div class="flex items-center justify-between">
+
+                <div class="w-12 h-12 rounded-xl
+                            bg-orange-100 dark:bg-orange-900/40
+                            flex items-center justify-center
+                            text-orange-600 dark:text-orange-400
+                            group-hover:scale-110
+                            transition-transform duration-300">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-6 h-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+
+                    </svg>
+
+                </div>
+
+                <span class="text-gray-300 dark:text-gray-600
+                             group-hover:text-orange-500">
+
+                    →
+
+                </span>
+
+            </div>
+
+            <h2 class="mt-5 text-lg font-semibold
+                       text-gray-800 dark:text-white">
+
+                Quiz
+
+            </h2>
+
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+
+                Manage quizzes and questions
+
+            </p>
+
+        </a>
+
+
+        <!-- Reading -->
+        <a href="/admin/reading/index"
+           class="group bg-white dark:bg-gray-800 rounded-2xl p-6
+                  border border-gray-200 dark:border-gray-700
+                  shadow-sm hover:shadow-xl
+                  transition-all duration-300
+                  hover:-translate-y-1">
+
+            <div class="flex items-center justify-between">
+
+                <div class="w-12 h-12 rounded-xl
+                            bg-pink-100 dark:bg-pink-900/40
+                            flex items-center justify-center
+                            text-pink-600 dark:text-pink-400
+                            group-hover:scale-110
+                            transition-transform duration-300">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-6 h-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5S19.832 5.477 21 6.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253" />
+
+                    </svg>
+
+                </div>
+
+                <span class="text-gray-300 dark:text-gray-600
+                             group-hover:text-pink-500">
+
+                    →
+
+                </span>
+
+            </div>
+
+            <h2 class="mt-5 text-lg font-semibold
+                       text-gray-800 dark:text-white">
+
+                Reading
+
+            </h2>
+
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+
+                Manage reading materials
+
+            </p>
+
+        </a>
+
+
+        <!-- Monitoring Assessment -->
+        <a href="/admin/monitoring/assessment"
+           class="group bg-white dark:bg-gray-800 rounded-2xl p-6
+                  border border-gray-200 dark:border-gray-700
+                  shadow-sm hover:shadow-xl
+                  transition-all duration-300
+                  hover:-translate-y-1">
+
+            <div class="flex items-center justify-between">
+
+                <div class="w-12 h-12 rounded-xl
+                            bg-red-100 dark:bg-red-900/40
+                            flex items-center justify-center
+                            text-red-600 dark:text-red-400
+                            group-hover:scale-110
+                            transition-transform duration-300">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-6 h-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h10a2 2 0 012 2v12a2 2 0 01-2 2z" />
+
+                    </svg>
+
+                </div>
+
+                <span class="text-gray-300 dark:text-gray-600
+                             group-hover:text-red-500">
+
+                    →
+
+                </span>
+
+            </div>
+
+            <h2 class="mt-5 text-lg font-semibold
+                       text-gray-800 dark:text-white">
+
+                Assessment Monitoring
+
+            </h2>
+
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+
+                Monitor student assessments
+
+            </p>
+
+        </a>
+
+
+        <!-- Monitoring Reading -->
+        <a href="/admin/monitoring/reading"
+           class="group bg-white dark:bg-gray-800 rounded-2xl p-6
+                  border border-gray-200 dark:border-gray-700
+                  shadow-sm hover:shadow-xl
+                  transition-all duration-300
+                  hover:-translate-y-1">
+
+            <div class="flex items-center justify-between">
+
+                <div class="w-12 h-12 rounded-xl
+                            bg-indigo-100 dark:bg-indigo-900/40
+                            flex items-center justify-center
+                            text-indigo-600 dark:text-indigo-400
+                            group-hover:scale-110
+                            transition-transform duration-300">
+
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="w-6 h-6"
+                         fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+
+                        <path stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+
+                    </svg>
+
+                </div>
+
+                <span class="text-gray-300 dark:text-gray-600
+                             group-hover:text-indigo-500">
+
+                    →
+
+                </span>
+
+            </div>
+
+            <h2 class="mt-5 text-lg font-semibold
+                       text-gray-800 dark:text-white">
+
+                Reading Monitoring
+
+            </h2>
+
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+
+                Monitor student reading activity
+
+            </p>
+
+        </a>
+
+    </div>
+
+</div>

@@ -1,0 +1,120 @@
+﻿@{
+    ViewData["Title"] = "Reading";
+    Layout = "_LayoutCustomer";
+    var audiobookId = Context.Request.Query["audiobook_id"];
+}
+<!-- ===================== TAB ===================== -->
+<div class="border-b border-gray-700 mb-6">
+    <div class="flex gap-8">
+        <a href="/Audiobook/Player?audiobook_id=@audiobookId"
+           class="pb-3 border-b-2 border-transparent text-gray-400 hover:text-white hover:border-gray-500 transition">
+            Listen
+        </a>
+        <a href="/customer/reading?audiobook_id=@audiobookId"
+           class="pb-3 border-b-2 border-white text-white font-semibold">
+            Read
+        </a>
+    </div>
+</div>
+
+<!-- ===================== HEADER ===================== -->
+<div id="reading-header"
+     class="bg-[#151517] rounded-2xl shadow-xl p-6 mb-6 text-white">
+    <h2 id="readingTitle" class="text-2xl font-bold mb-2">-</h2>
+    <p id="readingStatus" class="text-gray-400 text-sm"></p>
+</div>
+
+<!-- ===================== CONTENT ===================== -->
+<div id="readingContent"
+     class="bg-[#151517] rounded-2xl shadow-xl p-6 mb-6 text-gray-200 leading-relaxed prose prose-invert max-w-none">
+    <p class="text-gray-400">Memuat bacaan...</p>
+</div>
+
+<!-- ===================== ACTION ===================== -->
+<div class="mt-8 flex justify-between">
+    <a href="/Audiobook/Player?audiobook_id=@audiobookId"
+       class="bg-gray-700 hover:bg-gray-600
+              text-white font-semibold
+              py-2 px-6 rounded-lg transition">
+        ← Back to Audiobook
+    </a>
+    <button id="btnFinish"
+            class="bg-[#4f1636] hover:bg-[#5d1b40]
+                   text-white font-semibold
+                   py-2 px-8 rounded-lg transition">
+        Finish Reading
+    </button>
+</div>
+
+<script>
+    const AUDIOBOOK_ID = "@audiobookId";
+    const EXPLORER_URL = "/Audiobook/Explorer";
+    let READING_ID = null;
+
+    $(document).ready(function () {
+        loadReading();
+    });
+
+    function loadReading() {
+        $.ajax({
+            url: '/customer/reading/get',
+            type: 'GET',
+            data: { audiobookId: AUDIOBOOK_ID },
+            success: function (res) {
+                // Reading doesn't exist (or isn't accessible) for this
+                // audiobook — bounce back to the Explorer instead of
+                // showing a dead Read tab.
+                if (res.code !== 200) {
+                    window.location.href = EXPLORER_URL;
+                    return;
+                }
+
+                const data = res.data;
+                READING_ID = data.reading_id;
+
+                $("#readingTitle").text(data.audiobook_title || "Reading");
+                $("#readingContent").html(data.description || "<p class='text-gray-400'>Belum ada konten.</p>");
+
+                updateStatus(data.is_finished, data.finish_date);
+            },
+            error: function () {
+                window.location.href = EXPLORER_URL;
+            }
+        });
+    }
+
+    function updateStatus(isFinished, finishDate) {
+        if (isFinished) {
+            $("#readingStatus").html(`<span class="text-green-400 font-semibold">Selesai dibaca</span> pada ${new Date(finishDate).toLocaleString("id-ID")}`);
+            $("#btnFinish").prop("disabled", true).text("Sudah Selesai").addClass("opacity-50 cursor-not-allowed");
+        } else {
+            $("#readingStatus").text("Sedang dibaca");
+            $("#btnFinish").prop("disabled", false).text("Finish Reading").removeClass("opacity-50 cursor-not-allowed");
+        }
+    }
+
+    $(document).on("click", "#btnFinish", function () {
+        if (!READING_ID) return;
+
+        $("#btnFinish").prop("disabled", true).text("Menyimpan...");
+
+        $.ajax({
+            url: '/customer/reading/finish',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ ReadingId: READING_ID }),
+            success: function (res) {
+                if (res.code === 200) {
+                    updateStatus(true, new Date().toISOString());
+                } else {
+                    alert(res.message || "Gagal menandai selesai.");
+                    $("#btnFinish").prop("disabled", false).text("Finish Reading");
+                }
+            },
+            error: function () {
+                alert("Server error. Silakan coba lagi.");
+                $("#btnFinish").prop("disabled", false).text("Finish Reading");
+            }
+        });
+    });
+</script>

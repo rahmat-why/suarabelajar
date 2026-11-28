@@ -1,0 +1,240 @@
+﻿@{
+    ViewData["Title"] = "Monitoring Assessment";
+    Layout = "_LayoutAdmin";
+}
+<div class="p-6 max-w-7xl mx-auto">
+
+    <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Monitoring Assessment</h2>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+            <p class="text-sm text-gray-500 dark:text-gray-300">Lulus</p>
+            <h3 id="cardPass" class="text-2xl font-bold text-green-600 mt-1">-</h3>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+            <p class="text-sm text-gray-500 dark:text-gray-300">Belum Lulus</p>
+            <h3 id="cardFail" class="text-2xl font-bold text-red-600 mt-1">-</h3>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+            <p class="text-sm text-gray-500 dark:text-gray-300">Belum Submit</p>
+            <h3 id="cardPending" class="text-2xl font-bold text-yellow-500 mt-1">-</h3>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
+
+        <!-- Filters -->
+        <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <input type="text" id="tableSearch" placeholder="Search by serial number or audiobook title..."
+                   class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white w-full sm:w-80">
+
+            <div class="flex gap-2 w-full sm:w-auto">
+                <select id="packageFilter"
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white w-full sm:w-auto">
+                    <option value="">All Package</option>
+                </select>
+
+                <select id="statusFilter"
+                        class="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white w-full sm:w-auto">
+                    <option value="">All Status</option>
+                    <option value="Lulus">Lulus</option>
+                    <option value="BelumLulus">Belum Lulus</option>
+                    <option value="BelumSubmit">Belum Submit</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <table id="assessmentTable" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Serial Number</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Package</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Audiobook</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Quiz</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Score</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-200 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="mt-4 flex justify-between items-center text-gray-700 dark:text-gray-200">
+            <button id="prevPage" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50">Previous</button>
+            <span id="pageInfo">Page 1 of 1</span>
+            <button id="nextPage" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50">Next</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Detail Modal ===== -->
+<div id="detailModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100">Detail Assessment</h3>
+            <button id="closeModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div id="detailHeader" class="mb-4 text-sm text-gray-700 dark:text-gray-200"></div>
+        <div id="detailQuestions" class="space-y-4"></div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        let currentPage = 1;
+        const pageSize = 10;
+        let totalPages = 1;
+
+        $.ajax({
+            url: '/admin/monitoring/list-package',
+            type: 'GET',
+            success: function (res) {
+                if (res.code === 200 && Array.isArray(res.data)) {
+                    res.data.forEach(p => {
+                        $("#packageFilter").append(`<option value="${p.package_id}">${p.name}</option>`);
+                    });
+                }
+            }
+        });
+
+        function currentFilters() {
+            return {
+                search: $("#tableSearch").val(),
+                package: $("#packageFilter").val(),
+                status: $("#statusFilter").val()
+            };
+        }
+
+        function statusBadge(status) {
+            if (status === "Lulus") return `<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">Lulus</span>`;
+            if (status === "Belum Lulus") return `<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-700">Belum Lulus</span>`;
+            return `<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-700">Belum Submit</span>`;
+        }
+
+        function loadTable() {
+            const f = currentFilters();
+            $.ajax({
+                url: '/admin/monitoring/assessment/load',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    Draw: 0,
+                    Skip: (currentPage - 1) * pageSize,
+                    Take: pageSize,
+                    Data: f.search,
+                    Package: f.package,
+                    Status: f.status
+                }),
+                success: function (res) {
+                    $("#cardPass").text(res.totalPass ?? 0);
+                    $("#cardFail").text(res.totalFail ?? 0);
+                    $("#cardPending").text(res.totalPending ?? 0);
+
+                    const tbody = $("#assessmentTable tbody");
+                    tbody.empty();
+
+                    if (!res.data || res.data.length === 0) {
+                        tbody.append(`<tr><td colspan="7" class="px-6 py-4 text-center text-gray-500 dark:text-gray-300">No records found.</td></tr>`);
+                        totalPages = 1;
+                    } else {
+                        res.data.forEach(row => {
+                            tbody.append(`
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                    <td class="px-6 py-4 text-gray-800 dark:text-gray-100 font-medium">${row.serial_number || '-'}</td>
+                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300 text-sm">${row.package_name || '-'}</td>
+                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300 text-sm">${row.audiobook_title}</td>
+                                    <td class="px-6 py-4 text-gray-600 dark:text-gray-300 text-sm">${row.quiz_title || '-'}</td>
+                                    <td class="px-6 py-4 text-gray-800 dark:text-gray-100">${row.total_point} / ${row.minimum_point}</td>
+                                    <td class="px-6 py-4">${statusBadge(row.status)}</td>
+                                    <td class="px-6 py-4">
+                                        <button onclick="viewDetail('${row.assessment_id}')"
+                                                class="inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition">
+                                            Detail
+                                        </button>
+                                    </td>
+                                </tr>
+                            `);
+                        });
+
+                        totalPages = Math.ceil(res.recordsFiltered / pageSize);
+                    }
+
+                    $("#pageInfo").text(`Page ${currentPage} of ${totalPages}`);
+                    $("#prevPage").prop("disabled", currentPage === 1);
+                    $("#nextPage").prop("disabled", currentPage === totalPages);
+                },
+                error: function () {
+                    alert("Failed to load data.");
+                }
+            });
+        }
+
+        loadTable();
+
+        $("#tableSearch").on("keyup", function () { currentPage = 1; loadTable(); });
+        $("#packageFilter, #statusFilter").on("change", function () { currentPage = 1; loadTable(); });
+
+        $("#prevPage").click(function () { if (currentPage > 1) { currentPage--; loadTable(); } });
+        $("#nextPage").click(function () { if (currentPage < totalPages) { currentPage++; loadTable(); } });
+
+        window.viewDetail = function (assessmentId) {
+            $.ajax({
+                url: '/admin/monitoring/assessment/detail/' + encodeURIComponent(assessmentId),
+                type: 'GET',
+                success: function (res) {
+                    if (res.code !== 200) {
+                        alert(res.message || "Failed to load detail.");
+                        return;
+                    }
+
+                    const h = res.data.header;
+                    $("#detailHeader").html(`
+                        <p><strong>Serial:</strong> ${h.serial_number}</p>
+                        <p><strong>Audiobook:</strong> ${h.audiobook_title}</p>
+                        <p><strong>Quiz:</strong> ${h.quiz_title || '-'}</p>
+                        <p><strong>Score:</strong> ${h.total_point} / ${h.minimum_point} — ${statusBadge(h.status)}</p>
+                    `);
+
+                    const $q = $("#detailQuestions");
+                    $q.empty();
+
+                    res.data.questions.forEach((q, idx) => {
+                        let optionsHtml = "";
+                        q.options.forEach(o => {
+                            let cls = "text-gray-600 dark:text-gray-300";
+                            let mark = "";
+                            if (o.isCorrect) { cls = "text-green-600 font-medium"; mark = " ✓"; }
+                            if (o.isSelected && !o.isCorrect) { cls = "text-red-600 font-medium"; mark = " (dipilih, salah)"; }
+                            if (o.isSelected && o.isCorrect) { mark = " ✓ (dipilih)"; }
+
+                            optionsHtml += `<div class="${cls} text-sm pl-2">- ${o.optionText}${mark}</div>`;
+                        });
+
+                        $q.append(`
+                            <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-3">
+                                <p class="font-medium text-gray-800 dark:text-gray-100 mb-2">${idx + 1}. ${q.question} <span class="text-xs text-gray-400">(${q.point} poin)</span></p>
+                                ${optionsHtml}
+                            </div>
+                        `);
+                    });
+
+                    $("#detailModal").removeClass("hidden").addClass("flex");
+                },
+                error: function () {
+                    alert("Server error. Please try again.");
+                }
+            });
+        };
+
+        $("#closeModal").on("click", function () {
+            $("#detailModal").removeClass("flex").addClass("hidden");
+        });
+    });
+</script>

@@ -1,0 +1,581 @@
+@{
+    ViewData["Title"] = "Explorer";
+    Layout = "_LayoutCustomer";
+
+    var pkg = ViewBag.Package;
+    string pkgId = pkg != null ? (string)pkg.package_id : "";
+    string headerTitle = pkg != null ? (string)pkg.header_title : "";
+}
+
+<p class="text-2xl font-extrabold text-white leading-tight mt-2">
+    Platform Audio-Learning<br>
+    No. 1 di Indonesia
+</p>
+
+<p class="text-xl text-white leading-tight mt-2">
+    Terinspirasi Dari Banyak Ilmu Pengetahuan di Dunia
+</p>
+
+<div class="border-b border-gray-700 mt-4">
+    <button class="pb-2 px-1 text-white border-b-2 border-white font-semibold cursor-default">
+        @headerTitle
+    </button>
+</div>
+<div id="series-container" class="space-y-10 mt-3"></div>
+
+<div id="loading" class="text-center py-6 hidden">
+    <span class="text-gray-500 font-medium">Loading...</span>
+</div>
+
+<script>
+    let skip = 0;
+    let isLoading = false;
+    let isEnd = false;
+
+    const PACKAGE_ID = "@Html.Raw(System.Text.Json.JsonEncodedText.Encode(pkgId ?? ""))";
+    const take = 2;
+
+
+    // ==========================================
+    // DOCUMENT READY
+    // ==========================================
+    $(document).ready(function () {
+        loadMore();
+    });
+
+
+    // ==========================================
+    // INFINITE SCROLL
+    // ==========================================
+    $(window).on("scroll", function () {
+
+        if (
+            !isLoading &&
+            !isEnd &&
+            $(window).scrollTop() + $(window).height()
+            >= $(document).height() - 150
+        ) {
+            loadMore();
+        }
+
+    });
+
+
+    // ==========================================
+    // LOAD MORE
+    // ==========================================
+    function loadMore() {
+
+        if (isLoading || isEnd) {
+            return;
+        }
+
+        isLoading = true;
+
+        $("#loading").removeClass("hidden");
+
+
+        $.ajax({
+
+            url: "/customer/explorer",
+
+            method: "POST",
+
+            contentType: "application/json",
+
+            data: JSON.stringify({
+                skip: skip,
+                take: take
+            }),
+
+            success: function (res) {
+
+                if (
+                    res &&
+                    res.code === 200 &&
+                    Array.isArray(res.data)
+                ) {
+
+                    if (res.data.length === 0) {
+
+                        isEnd = true;
+
+                    } else {
+
+                        renderSeries(res.data);
+
+                        skip += take;
+
+
+                        // Auto load when page is not tall enough
+                        setTimeout(
+                            autoLoadIfNoScroll,
+                            200
+                        );
+
+                    }
+
+                }
+
+                finishLoading();
+
+            },
+
+            error: function (xhr) {
+
+                console.error(
+                    "Explorer Error:",
+                    xhr.responseText
+                );
+
+                finishLoading();
+
+            }
+
+        });
+
+    }
+
+
+    // ==========================================
+    // FINISH LOADING
+    // ==========================================
+    function finishLoading() {
+
+        isLoading = false;
+
+        $("#loading")
+            .addClass("hidden");
+
+    }
+
+
+    // ==========================================
+    // AUTO LOAD IF PAGE IS NOT SCROLLABLE
+    // ==========================================
+    function autoLoadIfNoScroll() {
+
+        if (
+            !isEnd &&
+            !isLoading &&
+            $(document).height() <= $(window).height()
+        ) {
+
+            loadMore();
+
+        }
+
+    }
+
+
+    // ==========================================
+    // SERIES RENDER
+    // ==========================================
+    function renderSeries(seriesList) {
+
+        if (!Array.isArray(seriesList)) {
+            return;
+        }
+
+
+        seriesList.forEach(function (series) {
+
+            // Original series ID
+            const seriesId =
+                series.series_id;
+
+
+            // Safe ID only for HTML element ID
+            const safeId =
+                encodeURIComponent(seriesId);
+
+
+            // Series image
+            const imagePath =
+                `/Audiobook/image/${PACKAGE_ID}/${safeId}.png`;
+
+
+            // ==========================================
+            // SERIES HTML
+            // ==========================================
+            const seriesHtml = `
+
+                    <div class="space-y-4">
+
+                        <!-- SERIES HEADER -->
+                        <div class="
+                            relative
+                            rounded-xl
+                            overflow-hidden
+                            border border-gray-700
+                            bg-gray-900
+                        ">
+
+                            <img
+                                src="${imagePath}"
+                                alt="${escapeHtml(series.series_name)}"
+                                class="
+                                    w-full
+                                    h-44
+                                    sm:h-52
+                                    object-cover
+                                    opacity-90
+                                "
+                            >
+
+                            <div class="
+                                absolute
+                                inset-0
+                                bg-gradient-to-t
+                                from-black/80
+                                via-black/30
+                                to-transparent
+                            "></div>
+
+
+                            <div class="
+                                absolute
+                                bottom-3
+                                left-4
+                                right-4
+                            ">
+
+                                <h2 class="
+                                    text-white
+                                    text-lg
+                                    font-semibold
+                                ">
+                                    ${escapeHtml(series.series_name)}
+                                </h2>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- SERIES ITEMS -->
+                        <div
+                            id="series-${safeId}"
+                            class="
+                                grid
+                                grid-cols-1
+                                sm:grid-cols-2
+                                lg:grid-cols-3
+                                gap-4
+                            "
+                        >
+                        </div>
+
+                    </div>
+
+                `;
+
+
+            // IMPORTANT:
+            // Append HTML string to container
+            $("#series-container")
+                .append(seriesHtml);
+
+
+            // ==========================================
+            // RENDER ITEMS
+            // ==========================================
+            if (
+                Array.isArray(series.items) &&
+                series.items.length > 0
+            ) {
+
+                series.items.forEach(function (item) {
+
+                    $(`#series-${safeId}`)
+                        .append(
+                            renderCard(
+                                item,
+                                seriesId
+                            )
+                        );
+
+                });
+
+            } else {
+
+                $(`#series-${safeId}`)
+                    .append(`
+
+                            <div class="
+                                text-gray-500
+                                text-sm
+                                col-span-full
+                            ">
+                                Belum ada item
+                            </div>
+
+                        `);
+
+            }
+
+        });
+
+    }
+
+
+    // ==========================================
+    // RENDER CARD
+    // ==========================================
+    function renderCard(item, seriesId = null) {
+        // ==========================================
+        // QUIZ CARD
+        // ==========================================
+        if (item.item_type === "quiz") {
+
+            return `
+            <div
+                onclick="goToQuiz('${seriesId}')"
+                class="
+                    relative
+                    w-full
+                    h-16
+                    rounded-xl
+                    overflow-hidden
+                    bg-gradient-to-r
+                    from-[#4b2b7f]
+                    via-[#3b4f82]
+                    to-[#286b6d]
+                    cursor-pointer
+                    flex
+                    items-center
+                    justify-between
+                    px-4
+                    sm:px-5
+                    transition
+                    hover:brightness-110
+                "
+            >
+
+                <!-- LEFT: QUIZ TITLE -->
+                <div
+                    class="
+                        flex
+                        items-center
+                        gap-2
+                        text-white
+                        text-sm
+                        sm:text-base
+                        font-bold
+                        whitespace-nowrap
+                    "
+                >
+
+                    <span>
+                        Start Quiz
+                    </span>
+
+                    <!-- QUIZ ICON -->
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        class="w-5 h-5 text-white"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75"
+                        />
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M19.5 14.25v-8.25
+                               A2.25 2.25 0 0017.25 3.75H6.75
+                               A2.25 2.25 0 004.5 6v12
+                               A2.25 2.25 0 006.75 20.25h10.5
+                               A2.25 2.25 0 0019.5 18v-1.5"
+                        />
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M15.75 3.75v3h3"
+                        />
+                    </svg>
+
+                </div>
+
+
+                <!-- RIGHT: START BUTTON -->
+                <div
+                    class="
+                        h-9
+                        min-w-[92px]
+                        px-5
+                        bg-[#20d8d0]
+                        hover:bg-[#2ce8df]
+                        rounded-sm
+                        flex
+                        items-center
+                        justify-center
+                        text-[#164f50]
+                        text-xs
+                        sm:text-sm
+                        font-bold
+                        tracking-widest
+                        transition
+                    "
+                >
+                    START
+                </div>
+
+            </div>
+        `;
+
+        }
+
+        // ==========================================
+        // AUDIOBOOK CARD
+        // (series layout never shows the cover image)
+        // ==========================================
+        return `
+
+                <div
+                    onclick="goToPlayer('${item.audiobook_id}')"
+                    class="
+                        relative
+                        bg-[#151517]
+                        rounded-xl
+                        shadow
+                        hover:shadow-lg
+                        transition
+                        cursor-pointer
+                        p-3
+                        sm:p-4
+                        flex
+                        gap-3
+                        sm:gap-4
+                    "
+                >
+
+                    <div class="
+                        flex
+                        flex-col
+                        justify-center
+                        pr-10
+                    ">
+
+                        <div class="
+                            text-sm
+                            sm:text-base
+                            font-semibold
+                            text-gray-100
+                            line-clamp-2
+                        ">
+
+                            ${escapeHtml(item.title)}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="
+                        absolute
+                        bottom-3
+                        right-3
+                        sm:bottom-4
+                        sm:right-4
+                    ">
+
+                        <div class="
+                            w-9
+                            h-9
+                            bg-[#4f1636]
+                            hover:bg-[#5d1b40]
+                            rounded-full
+                            flex
+                            items-center
+                            justify-center
+                            shadow-lg
+                        ">
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 24 24"
+                                fill="white"
+                                class="
+                                    w-4
+                                    h-4
+                                    ml-0.5
+                                "
+                            >
+
+                                <path d="M8 5v14l11-7z" />
+
+                            </svg>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+    }
+
+
+    // ==========================================
+    // GO TO AUDIOBOOK PLAYER
+    // ==========================================
+    function goToPlayer(id) {
+
+        window.location.href =
+            "/Audiobook/Player?audiobook_id=" +
+            encodeURIComponent(id);
+
+    }
+
+
+    // ==========================================
+    // GO TO QUIZ
+    // ==========================================
+    function goToQuiz(seriesId) {
+
+        if (!seriesId) {
+
+            console.error(
+                "Series ID is missing."
+            );
+
+            return;
+
+        }
+
+        window.location.href =
+            "/AssessmentPreview?series_id=" +
+            encodeURIComponent(seriesId);
+
+    }
+
+
+    // ==========================================
+    // ESCAPE HTML
+    // Prevent HTML injection from API data
+    // ==========================================
+    function escapeHtml(value) {
+
+        if (value === null || value === undefined) {
+            return "";
+        }
+
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+</script>
